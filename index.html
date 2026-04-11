@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מחשבון רווח תפעולי — פרויקטים</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F7F6F2;
+  --surface: #FFFFFF;
+  --surface2: #F2F0EB;
+  --border: #E2DFDA;
+  --border-strong: #C8C5BF;
+  --text: #1A1917;
+  --text2: #5C5A56;
+  --text3: #9C9A96;
+  --accent: #2A5C45;
+  --accent-light: #E6F0EC;
+  --accent2: #C4622D;
+  --accent2-light: #FAF0EA;
+  --info: #1A4A7A;
+  --info-light: #EAF0F8;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Heebo', sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.6; min-height: 100vh; }
+
+/* HEADER */
+.app-header { background: var(--accent); color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-md); }
+.app-header h1 { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
+.app-header .subtitle { font-size: 12px; opacity: 0.7; font-weight: 300; margin-top: 1px; }
+.header-actions { display: flex; gap: 8px; }
+
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; cursor: pointer; border: none; font-family: 'Heebo', sans-serif; transition: all 0.15s ease; white-space: nowrap; }
+.btn-ghost { background: rgba(255,255,255,0.12); color: white; border: 1px solid rgba(255,255,255,0.25); }
+.btn-ghost:hover { background: rgba(255,255,255,0.22); }
+.btn-primary { background: white; color: var(--accent); }
+.btn-primary:hover { background: #f0f0ee; }
+.btn-outline { background: transparent; color: var(--text2); border: 1px solid var(--border-strong); }
+.btn-outline:hover { background: var(--surface2); }
+.btn-add { background: var(--accent-light); color: var(--accent); border: 1px dashed #8BB8A4; width: 100%; justify-content: center; padding: 9px; margin-top: 8px; }
+.btn-add:hover { background: #d4e8df; }
+.btn-sm { padding: 4px 10px; font-size: 12px; }
+
+/* LAYOUT */
+.main { padding: 2rem; max-width: 1050px; margin: 0 auto; }
+
+/* CARDS */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 1.25rem; box-shadow: var(--shadow); overflow: hidden; }
+.card-header { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--border); background: var(--surface2); }
+.card-num { width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: white; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.card-title { font-size: 14px; font-weight: 600; color: var(--text); }
+.card-desc { font-size: 12px; color: var(--text3); margin-right: auto; }
+.card-body { padding: 18px; }
+
+/* FORMS */
+.field label { display: block; font-size: 11px; font-weight: 500; color: var(--text2); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.4px; }
+input[type=text], input[type=number], select { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; font-family: 'Heebo', sans-serif; color: var(--text); background: var(--surface); transition: border-color 0.15s; }
+input[type=number] { -moz-appearance: textfield; }
+input[type=number]::-webkit-outer-spin-button, input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(42,92,69,0.1); }
+input.currency { direction: ltr; text-align: right; }
+input[readonly] { background: var(--surface2); color: var(--text2); cursor: default; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+/* TEAM MEMBERS TABLE */
+.team-table { width: 100%; border-collapse: collapse; }
+.team-table thead th { font-size: 11px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 0.4px; padding: 0 8px 10px; text-align: right; border-bottom: 1px solid var(--border); }
+.team-table tbody td { padding: 6px 6px; border-bottom: 1px solid #F0EDE8; vertical-align: middle; }
+.team-table tbody tr:last-child td { border-bottom: none; }
+.team-table input, .team-table select { padding: 6px 8px; font-size: 13px; }
+.del-btn { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 16px; padding: 0 4px; line-height: 1; transition: color 0.15s; }
+.del-btn:hover { color: var(--accent2); }
+.member-cost-display { font-size: 11px; color: var(--text3); text-align: center; padding: 0 4px; white-space: nowrap; }
+.role-badge { display: inline-block; font-size: 11px; padding: 2px 7px; border-radius: 3px; font-weight: 500; }
+
+/* SALARY HINT */
+.salary-hint { font-size: 11px; color: var(--text3); margin-top: 3px; }
+.salary-hint span { color: var(--accent); font-weight: 500; }
+
+/* MILESTONES */
+.milestone-card { border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 10px; overflow: hidden; }
+.milestone-header { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: var(--surface2); border-bottom: 1px solid var(--border); }
+.milestone-num { width: 22px; height: 22px; border-radius: 50%; background: var(--info-light); color: var(--info); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.milestone-title-input { flex: 1; border: none; background: transparent; font-size: 13px; font-weight: 600; color: var(--text); font-family: 'Heebo', sans-serif; }
+.milestone-title-input:focus { outline: 1px solid var(--border-strong); border-radius: 3px; }
+.del-ms { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 18px; line-height: 1; padding: 0 2px; transition: color 0.15s; }
+.del-ms:hover { color: var(--accent2); }
+.milestone-body { padding: 14px; }
+.ms-meta { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+
+/* MEMBERS PCT TABLE inside milestone */
+.ms-members-table { width: 100%; border-collapse: collapse; }
+.ms-members-table th { font-size: 11px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 0.3px; padding: 0 6px 8px; text-align: right; border-bottom: 1px solid var(--border); }
+.ms-members-table td { padding: 5px 6px; border-bottom: 1px solid #F4F2EE; vertical-align: middle; }
+.ms-members-table tr:last-child td { border-bottom: none; }
+.ms-members-table input { width: 70px; padding: 5px 6px; text-align: center; }
+.ms-contrib { font-size: 11px; color: var(--text3); direction: ltr; text-align: right; }
+.member-row-name { font-size: 13px; font-weight: 500; }
+.member-row-role { font-size: 11px; color: var(--text3); }
+
+/* OUTPUT */
+.output-card { background: var(--surface); border: 2px solid var(--accent); }
+.output-card .card-header { background: var(--accent); }
+.output-card .card-header .card-num { background: rgba(255,255,255,0.2); }
+.output-card .card-header .card-title { color: white; }
+.output-card .card-header .card-desc { color: rgba(255,255,255,0.7); }
+.metrics-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+.metric { background: var(--surface2); border-radius: var(--radius-sm); padding: 14px; text-align: center; border: 1px solid var(--border); }
+.metric-label { font-size: 11px; color: var(--text3); margin-bottom: 6px; font-weight: 500; }
+.metric-val { font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -0.5px; }
+.metric-val.green { color: var(--accent); }
+.metric-val.red { color: var(--accent2); }
+.metric-val.blue { color: var(--info); }
+.profit-bar-wrap { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; margin-bottom: 6px; }
+.profit-bar { height: 100%; border-radius: 4px; transition: width 0.4s cubic-bezier(0.4,0,0.2,1), background 0.3s; }
+.bar-label { font-size: 11px; color: var(--text3); text-align: center; margin-bottom: 18px; }
+
+/* BREAKDOWN */
+.breakdown-title { font-size: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+.breakdown-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.breakdown-table th { text-align: right; font-size: 11px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 0.4px; padding: 0 8px 8px; border-bottom: 1px solid var(--border); }
+.breakdown-table td { padding: 7px 8px; border-bottom: 1px solid #F4F2EE; vertical-align: middle; }
+.breakdown-table tr:last-child td { border-bottom: none; }
+.breakdown-table tr.ms-row td { background: #F8F7F4; font-weight: 600; }
+.breakdown-table .num { text-align: left; direction: ltr; font-variant-numeric: tabular-nums; }
+.tag { display: inline-block; font-size: 10px; padding: 2px 6px; border-radius: 3px; font-weight: 500; }
+.tag-ms { background: var(--info-light); color: var(--info); }
+.tag-member { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
+
+/* TOAST */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--text); color: white; padding: 10px 20px; border-radius: 20px; font-size: 13px; font-weight: 500; transition: transform 0.3s ease, opacity 0.3s ease; opacity: 0; z-index: 999; white-space: nowrap; }
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+/* MODAL */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200; align-items: center; justify-content: center; }
+.modal-overlay.active { display: flex; }
+.modal { background: var(--surface); border-radius: var(--radius); padding: 24px; min-width: 340px; max-width: 90vw; box-shadow: var(--shadow-md); }
+.modal h2 { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+.save-list { max-height: 300px; overflow-y: auto; }
+.save-item { display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 8px; cursor: pointer; transition: background 0.15s; }
+.save-item:hover { background: var(--surface2); }
+.save-info { flex: 1; }
+.save-name { font-size: 13px; font-weight: 600; }
+.save-meta { font-size: 11px; color: var(--text3); }
+.save-del { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 16px; padding: 0 4px; }
+.save-del:hover { color: var(--accent2); }
+.modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+.empty-msg { text-align: center; color: var(--text3); font-size: 13px; padding: 24px 0; }
+
+@media (max-width: 700px) {
+  .main { padding: 1rem; }
+  .app-header { padding: 12px 1rem; }
+  .metrics-row { grid-template-columns: 1fr 1fr; }
+  .ms-meta { grid-template-columns: 1fr 1fr; }
+  .header-actions .btn-label { display: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div>
+    <div style="font-size:11px;opacity:0.6;font-weight:300;margin-bottom:2px">PROFIT CALCULATOR</div>
+    <h1>מחשבון רווח תפעולי</h1>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-ghost" onclick="openLoad()">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 11v2a1 1 0 001 1h10a1 1 0 001-1v-2M8 2v8M5 7l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="btn-label">טעינה</span>
+    </button>
+    <button class="btn btn-ghost" onclick="saveProject()">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1zM10 2v4H5V2M5 9h6M5 12h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="btn-label">שמירה</span>
+    </button>
+    <button class="btn btn-primary" onclick="newProject()">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <span class="btn-label">פרויקט חדש</span>
+    </button>
+  </div>
+</header>
+
+<main class="main">
+
+<!-- CARD 0: Project Info -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-num" style="background:#4A7C65">P</div>
+    <div class="card-title">פרטי פרויקט</div>
+    <div class="card-desc">מידע כללי</div>
+  </div>
+  <div class="card-body">
+    <div class="grid2">
+      <div class="field"><label>שם הפרויקט</label><input type="text" id="projectName" placeholder="לדוגמה: פיתוח מערכת CRM" oninput="calc()"></div>
+      <div class="field"><label>שם הלקוח</label><input type="text" id="clientName" placeholder="לדוגמה: חברת אלפא בע״מ" oninput="calc()"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CARD 1: Team Members -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-num">1</div>
+    <div class="card-title">כוח אדם — עלות מעסיק חודשית</div>
+    <div class="card-desc">כולל שכר + בטוח לאומי + פנסיה + פיצויים + קרן השתלמות (~35% מעל שכר ברוטו)</div>
+  </div>
+  <div class="card-body">
+    <table class="team-table">
+      <thead>
+        <tr>
+          <th style="width:30%">שם העובד</th>
+          <th style="width:28%">תפקיד</th>
+          <th style="width:28%">עלות מעסיק חודשית (₪)</th>
+          <th style="width:10%;text-align:center">שכר ברוטו משוער</th>
+          <th style="width:4%"></th>
+        </tr>
+      </thead>
+      <tbody id="team-body"></tbody>
+    </table>
+    <button class="btn btn-add" onclick="addMember()">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      הוסף חבר צוות
+    </button>
+  </div>
+</div>
+
+<!-- CARD 2: Milestones -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-num">2</div>
+    <div class="card-title">אבני דרך</div>
+    <div class="card-desc">הגדר שלבים, משך ואחוז מעורבות לכל חבר צוות</div>
+  </div>
+  <div class="card-body">
+    <div id="milestones-container"></div>
+    <button class="btn btn-add" onclick="addMilestone()">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      הוסף אבן דרך
+    </button>
+  </div>
+</div>
+
+<!-- CARD 3: Budget -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-num">3</div>
+    <div class="card-title">תקציב הפרויקט</div>
+    <div class="card-desc">הסכום הכולל שנקבע מול הלקוח</div>
+  </div>
+  <div class="card-body">
+    <div class="grid3">
+      <div class="field"><label>תקציב כולל (₪)</label><input type="number" id="budget" class="currency" value="800000" min="0" oninput="calc()"></div>
+      <div class="field"><label>עלות כ״א מחושבת (₪)</label><input type="text" id="computed-cost" class="currency" readonly></div>
+      <div class="field"><label>רווח תפעולי מחושב (₪)</label><input type="text" id="computed-profit" class="currency" readonly></div>
+    </div>
+  </div>
+</div>
+
+<!-- CARD 4: Output -->
+<div class="card output-card">
+  <div class="card-header">
+    <div class="card-num">4</div>
+    <div class="card-title">תוצאה — רווח תפעולי</div>
+    <div class="card-desc" id="output-subtitle">ממתין לנתונים...</div>
+  </div>
+  <div class="card-body">
+    <div class="metrics-row">
+      <div class="metric"><div class="metric-label">תקציב</div><div class="metric-val blue" id="out-budget">₪0</div></div>
+      <div class="metric"><div class="metric-label">עלות כ״א כוללת</div><div class="metric-val" id="out-cost">₪0</div></div>
+      <div class="metric"><div class="metric-label">רווח תפעולי</div><div class="metric-val green" id="out-profit">₪0</div></div>
+      <div class="metric"><div class="metric-label">מרווח רווח</div><div class="metric-val" id="out-margin">0%</div></div>
+    </div>
+    <div class="profit-bar-wrap"><div class="profit-bar" id="profit-bar" style="width:0%"></div></div>
+    <div class="bar-label" id="bar-label"></div>
+
+    <div class="breakdown-title">פירוט עלויות לפי אבני דרך</div>
+    <table class="breakdown-table">
+      <thead>
+        <tr>
+          <th>שלב / עובד</th>
+          <th style="text-align:center">חודשים</th>
+          <th style="text-align:center">%</th>
+          <th style="text-align:left;direction:ltr">עלות (₪)</th>
+          <th style="text-align:left;direction:ltr">% מתקציב</th>
+        </tr>
+      </thead>
+      <tbody id="breakdown-body"></tbody>
+    </table>
+    <div id="breakdown-empty" style="text-align:center;color:var(--text3);font-size:13px;padding:20px 0;display:none">הוסף אבני דרך כדי לראות פירוט עלויות</div>
+  </div>
+</div>
+
+</main>
+
+<!-- Load Modal -->
+<div class="modal-overlay" id="load-modal">
+  <div class="modal">
+    <h2>טעינת פרויקט שמור</h2>
+    <div class="save-list" id="save-list"></div>
+    <div class="modal-footer">
+      <input type="file" id="file-input" accept=".json" style="display:none" onchange="loadFromFile(event)">
+      <button class="btn btn-outline" onclick="document.getElementById('file-input').click()">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2 11v2a1 1 0 001 1h10a1 1 0 001-1v-2M8 2v8M5 7l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        טעינה מקובץ
+      </button>
+      <button class="btn btn-outline" onclick="closeModal()">ביטול</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const ROLE_TYPES = [
+  { id:'pm',    label:'מנהל פרויקט',       icon:'👔', color:'#E8F4F0', defaultCost: 33000 },
+  { id:'devops',label:'DevOps',             icon:'⚙️', color:'#EAF0F8', defaultCost: 41000 },
+  { id:'ai',    label:'מהנדס פתרונות AI',  icon:'🤖', color:'#F0EAF8', defaultCost: 52000 },
+  { id:'fs',    label:'Full Stack',         icon:'💻', color:'#EAF4E8', defaultCost: 40000 },
+  { id:'gfx',   label:'עיצוב גרפי',        icon:'🎨', color:'#FAF0EA', defaultCost: 22000 },
+  { id:'da',    label:'ארכיטקט נתונים',    icon:'🗄️', color:'#F8EAF0', defaultCost: 49000 },
+  { id:'arch',  label:'ארכיטקט פרויקט',   icon:'🏗️', color:'#EAEAF8', defaultCost: 52000 },
+];
+
+// team = [{id, name, roleId, cost}]
+let team = [];
+let milestones = [];
+let memberCounter = 0;
+let msCounter = 0;
+
+// ─── TEAM ───
+function addMember(name, roleId, cost) {
+  const id = memberCounter++;
+  const role = ROLE_TYPES.find(r => r.id === (roleId||'fs')) || ROLE_TYPES[3];
+  team.push({ id, name: name||'', roleId: role.id, cost: cost||role.defaultCost });
+  renderTeam();
+  renderAllMilestones();
+  calc();
+}
+
+function removeMember(id) {
+  team = team.filter(m => m.id !== id);
+  renderTeam();
+  renderAllMilestones();
+  calc();
+}
+
+function getMemberIdx(id) { return team.findIndex(m => m.id === id); }
+
+function renderTeam() {
+  const body = document.getElementById('team-body');
+  if (team.length === 0) {
+    body.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:16px;font-size:13px">הוסף חברי צוות כדי להתחיל</td></tr>';
+    return;
+  }
+  body.innerHTML = team.map((m, i) => {
+    const role = ROLE_TYPES.find(r => r.id === m.roleId) || ROLE_TYPES[0];
+    const gross = Math.round(m.cost / 1.35);
+    return `<tr>
+      <td><input type="text" value="${escHtml(m.name)}" placeholder="לדוגמה: ישראל ישראלי"
+        oninput="team[${i}].name=this.value;renderAllMilestones();calc()"></td>
+      <td>
+        <select onchange="team[${i}].roleId=this.value;renderTeam();renderAllMilestones();calc()">
+          ${ROLE_TYPES.map(r=>`<option value="${r.id}" ${r.id===m.roleId?'selected':''}>${r.icon} ${r.label}</option>`).join('')}
+        </select>
+      </td>
+      <td><input type="number" class="currency" min="0" step="500" value="${m.cost}"
+        oninput="team[${i}].cost=parseFloat(this.value)||0;calc()"></td>
+      <td class="member-cost-display">~₪${gross.toLocaleString('he-IL')}</td>
+      <td style="text-align:center"><button class="del-btn" onclick="removeMember(${m.id})">✕</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// ─── MILESTONES ───
+function addMilestone(name, months, pctMap) {
+  const id = msCounter++;
+  // pctMap: { memberId: pct }
+  const pcts = {};
+  team.forEach(m => { pcts[m.id] = (pctMap && pctMap[m.id] != null) ? pctMap[m.id] : 0; });
+  milestones.push({ id, name: name||('אבן דרך '+(milestones.length+1)), months: months||1, pcts });
+  renderAllMilestones();
+  calc();
+}
+
+function removeMilestone(id) {
+  milestones = milestones.filter(m => m.id !== id);
+  renderAllMilestones();
+  calc();
+}
+
+function renderAllMilestones() {
+  const c = document.getElementById('milestones-container');
+  if (milestones.length === 0) { c.innerHTML = ''; return; }
+  c.innerHTML = milestones.map((ms, idx) => renderMilestoneHTML(ms, idx)).join('');
+}
+
+function renderMilestoneHTML(ms, idx) {
+  if (team.length === 0) {
+    return `<div class="milestone-card" id="ms_${ms.id}">
+      <div class="milestone-header">
+        <div class="milestone-num">${idx+1}</div>
+        <input class="milestone-title-input" type="text" value="${escHtml(ms.name)}"
+          oninput="milestones[${idx}].name=this.value;calc()">
+        <button class="del-ms" onclick="removeMilestone(${ms.id})">✕</button>
+      </div>
+      <div class="milestone-body" style="color:var(--text3);font-size:13px;text-align:center;padding:12px">
+        הוסף חברי צוות כדי להגדיר אחוזי מעורבות
+      </div>
+    </div>`;
+  }
+
+  const memberRows = team.map((m, mi) => {
+    const role = ROLE_TYPES.find(r => r.id === m.roleId) || ROLE_TYPES[0];
+    const pct = ms.pcts[m.id] != null ? ms.pcts[m.id] : 0;
+    const contrib = m.cost * (pct/100) * ms.months;
+    const displayName = m.name || role.label;
+    return `<tr>
+      <td>
+        <div class="member-row-name">${escHtml(displayName)}</div>
+        <div class="member-row-role">${role.icon} ${role.label}</div>
+      </td>
+      <td>
+        <input type="number" min="0" max="100" step="5" value="${pct}"
+          oninput="setMsPct(${idx},${m.id},this.value)">
+      </td>
+      <td class="ms-contrib" id="msrc_${ms.id}_${m.id}">${fmt(contrib)}</td>
+    </tr>`;
+  }).join('');
+
+  return `<div class="milestone-card" id="ms_${ms.id}">
+    <div class="milestone-header">
+      <div class="milestone-num">${idx+1}</div>
+      <input class="milestone-title-input" type="text" value="${escHtml(ms.name)}"
+        oninput="milestones[${idx}].name=this.value;calc()">
+      <button class="del-ms" onclick="removeMilestone(${ms.id})">✕</button>
+    </div>
+    <div class="milestone-body">
+      <div class="ms-meta">
+        <div class="field"><label>משך (חודשים)</label>
+          <input type="number" min="0.5" step="0.5" value="${ms.months}"
+            oninput="milestones[${idx}].months=parseFloat(this.value)||0;calc()"></div>
+        <div class="field"><label>עלות שלב</label>
+          <input type="text" id="ms_cost_${ms.id}" readonly></div>
+        <div class="field"><label>% מתקציב</label>
+          <input type="text" id="ms_pct_${ms.id}" readonly></div>
+      </div>
+      <table class="ms-members-table">
+        <thead><tr>
+          <th>עובד / תפקיד</th>
+          <th style="width:90px">% מעורבות</th>
+          <th style="width:120px;text-align:left;direction:ltr">עלות (₪)</th>
+        </tr></thead>
+        <tbody>${memberRows}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+function setMsPct(msIdx, memberId, val) {
+  if (milestones[msIdx]) {
+    milestones[msIdx].pcts[memberId] = parseFloat(val) || 0;
+    calc();
+  }
+}
+
+// Sync new members into existing milestones
+function syncMemberToMilestones(memberId) {
+  milestones.forEach(ms => { if (ms.pcts[memberId] == null) ms.pcts[memberId] = 0; });
+}
+
+// ─── CALC ───
+function calc() {
+  const budget = parseFloat(document.getElementById('budget').value) || 0;
+  let totalCost = 0;
+  const breakdown = [];
+
+  milestones.forEach(ms => {
+    let msCost = 0;
+    const contribs = [];
+    team.forEach(m => {
+      const pct = ms.pcts[m.id] != null ? ms.pcts[m.id] : 0;
+      const contrib = m.cost * (pct/100) * ms.months;
+      msCost += contrib;
+      contribs.push({ member: m, pct, contrib });
+      // Update inline cell
+      const el = document.getElementById(`msrc_${ms.id}_${m.id}`);
+      if (el) el.textContent = fmt(contrib);
+    });
+    totalCost += msCost;
+
+    const costEl = document.getElementById(`ms_cost_${ms.id}`);
+    const pctEl  = document.getElementById(`ms_pct_${ms.id}`);
+    if (costEl) costEl.value = fmt(msCost);
+    if (pctEl)  pctEl.value  = budget > 0 ? (msCost/budget*100).toFixed(1)+'%' : '-';
+
+    breakdown.push({ ms, msCost, contribs });
+  });
+
+  const profit = budget - totalCost;
+  const margin = budget > 0 ? (profit/budget*100) : 0;
+
+  // Summary fields
+  document.getElementById('computed-cost').value = fmt(totalCost);
+  const cpEl = document.getElementById('computed-profit');
+  cpEl.value = fmt(profit);
+  cpEl.style.color = profit >= 0 ? 'var(--accent)' : 'var(--accent2)';
+
+  // Output metrics
+  document.getElementById('out-budget').textContent = fmt(budget);
+  document.getElementById('out-cost').textContent = fmt(totalCost);
+  const pEl = document.getElementById('out-profit');
+  pEl.textContent = fmt(profit);
+  pEl.className = 'metric-val ' + (profit >= 0 ? 'green' : 'red');
+  const mEl = document.getElementById('out-margin');
+  mEl.textContent = margin.toFixed(1)+'%';
+  mEl.className = 'metric-val '+(margin>=20?'green':margin>=0?'':'red');
+
+  // Bar
+  const barPct = budget > 0 ? Math.max(0, Math.min(100, profit/budget*100)) : 0;
+  const bar = document.getElementById('profit-bar');
+  bar.style.width = barPct+'%';
+  bar.style.background = profit >= 0 ? '#2A5C45' : '#C4622D';
+  document.getElementById('bar-label').textContent =
+    `מרווח: ${margin.toFixed(1)}% | עלות כ״א: ${fmt(totalCost)} | תקציב: ${fmt(budget)}`;
+
+  // Subtitle
+  const proj = document.getElementById('projectName').value;
+  const client = document.getElementById('clientName').value;
+  let sub = [proj, client].filter(Boolean).join(' | ');
+  document.getElementById('output-subtitle').textContent = sub || 'ממתין לנתונים...';
+
+  // Breakdown table
+  const tbody = document.getElementById('breakdown-body');
+  const empty = document.getElementById('breakdown-empty');
+  if (breakdown.length === 0) { tbody.innerHTML = ''; empty.style.display='block'; return; }
+  empty.style.display = 'none';
+  let html = '';
+  breakdown.forEach(({ ms, msCost, contribs }) => {
+    const msPctB = budget > 0 ? (msCost/budget*100).toFixed(1) : '0.0';
+    html += `<tr class="ms-row">
+      <td><span class="tag tag-ms">שלב</span> ${escHtml(ms.name)}</td>
+      <td style="text-align:center">${ms.months}</td>
+      <td style="text-align:center">—</td>
+      <td class="num" style="font-weight:700">${fmt(msCost)}</td>
+      <td class="num" style="color:var(--info)">${msPctB}%</td>
+    </tr>`;
+    contribs.forEach(({ member, pct, contrib }) => {
+      if (contrib <= 0) return;
+      const role = ROLE_TYPES.find(r => r.id === member.roleId) || ROLE_TYPES[0];
+      const displayName = member.name || role.label;
+      const rPctB = budget > 0 ? (contrib/budget*100).toFixed(1) : '0.0';
+      html += `<tr>
+        <td style="padding-right:24px">
+          <span class="tag tag-member">${role.icon}</span>
+          ${escHtml(displayName)}
+          <span style="font-size:11px;color:var(--text3)"> · ${role.label}</span>
+        </td>
+        <td style="text-align:center">${ms.months}</td>
+        <td style="text-align:center">${pct}%</td>
+        <td class="num">${fmt(contrib)}</td>
+        <td class="num" style="color:var(--text3)">${rPctB}%</td>
+      </tr>`;
+    });
+  });
+  const totalPct = budget > 0 ? (totalCost/budget*100).toFixed(1) : '0.0';
+  html += `<tr style="background:var(--surface2);font-weight:700;border-top:2px solid var(--border-strong)">
+    <td>סה״כ עלות כ״א</td><td></td><td></td>
+    <td class="num" style="font-weight:700">${fmt(totalCost)}</td>
+    <td class="num" style="color:var(--text2)">${totalPct}%</td>
+  </tr>
+  <tr style="background:${profit>=0?'#EEF7F2':'#FAF0EA'};font-weight:700">
+    <td style="color:${profit>=0?'var(--accent)':'var(--accent2)'}">רווח תפעולי</td>
+    <td></td><td></td>
+    <td class="num" style="color:${profit>=0?'var(--accent)':'var(--accent2)'};font-size:15px">${fmt(profit)}</td>
+    <td class="num" style="color:${profit>=0?'var(--accent)':'var(--accent2)'}">${margin.toFixed(1)}%</td>
+  </tr>`;
+  tbody.innerHTML = html;
+}
+
+// ─── SAVE / LOAD ───
+function getState() {
+  return {
+    version: 2,
+    projectName: document.getElementById('projectName').value,
+    clientName: document.getElementById('clientName').value,
+    budget: document.getElementById('budget').value,
+    team: team.map(m => ({ name: m.name, roleId: m.roleId, cost: m.cost })),
+    milestones: milestones.map(ms => ({ name: ms.name, months: ms.months, pcts: { ...ms.pcts } })),
+    savedAt: new Date().toISOString()
+  };
+}
+
+function applyState(state) {
+  document.getElementById('projectName').value = state.projectName || '';
+  document.getElementById('clientName').value  = state.clientName  || '';
+  document.getElementById('budget').value       = state.budget      || 0;
+  team = []; memberCounter = 0;
+  (state.team || []).forEach(m => {
+    team.push({ id: memberCounter++, name: m.name||'', roleId: m.roleId||'fs', cost: m.cost||0 });
+  });
+  milestones = []; msCounter = 0;
+  (state.milestones || []).forEach((ms, i) => {
+    const pcts = {};
+    team.forEach((m, mi) => {
+      const oldPct = ms.pcts ? (ms.pcts[mi] != null ? ms.pcts[mi] : (ms.pcts[m.id] != null ? ms.pcts[m.id] : 0)) : 0;
+      pcts[m.id] = oldPct;
+    });
+    milestones.push({ id: msCounter++, name: ms.name, months: ms.months, pcts });
+  });
+  renderTeam();
+  renderAllMilestones();
+  calc();
+}
+
+function saveProject() {
+  const state = getState();
+  const name = state.projectName || 'פרויקט';
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `profit-${name.replace(/\s+/g,'-')}-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  const saves = getLocalSaves();
+  saves[Date.now().toString()] = state;
+  localStorage.setItem('profitCalcSaves', JSON.stringify(saves));
+  showToast('הפרויקט נשמר');
+}
+
+function getLocalSaves() {
+  try { return JSON.parse(localStorage.getItem('profitCalcSaves') || '{}'); } catch { return {}; }
+}
+
+function openLoad() {
+  const saves = getLocalSaves();
+  const list = document.getElementById('save-list');
+  const keys = Object.keys(saves).sort((a,b) => b-a);
+  if (keys.length === 0) {
+    list.innerHTML = '<div class="empty-msg">אין פרויקטים שמורים בדפדפן זה.<br>ניתן לטעון קובץ JSON שמור.</div>';
+  } else {
+    list.innerHTML = keys.map(k => {
+      const s = saves[k];
+      const d = new Date(s.savedAt).toLocaleDateString('he-IL');
+      const members = (s.team||[]).length;
+      return `<div class="save-item">
+        <div class="save-info" onclick="loadFromLocal('${k}')">
+          <div class="save-name">${escHtml(s.projectName||'ללא שם')}</div>
+          <div class="save-meta">${escHtml(s.clientName||'')} · ${members} עובדים · ${d}</div>
+        </div>
+        <button class="save-del" onclick="deleteLocal('${k}',event)">✕</button>
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('load-modal').classList.add('active');
+}
+
+function loadFromLocal(id) {
+  const saves = getLocalSaves();
+  if (saves[id]) { applyState(saves[id]); showToast('הפרויקט נטען בהצלחה'); }
+  closeModal();
+}
+
+function deleteLocal(id, e) {
+  e.stopPropagation();
+  const saves = getLocalSaves();
+  delete saves[id];
+  localStorage.setItem('profitCalcSaves', JSON.stringify(saves));
+  openLoad();
+}
+
+function loadFromFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try { applyState(JSON.parse(e.target.result)); showToast('הקובץ נטען בהצלחה'); closeModal(); }
+    catch { showToast('שגיאה בטעינת הקובץ'); }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+function closeModal() { document.getElementById('load-modal').classList.remove('active'); }
+
+function newProject() {
+  if (team.length > 0 && !confirm('ליצור פרויקט חדש? הנתונים הנוכחיים יאופסו.')) return;
+  team = []; milestones = []; memberCounter = 0; msCounter = 0;
+  document.getElementById('projectName').value = '';
+  document.getElementById('clientName').value = '';
+  document.getElementById('budget').value = 800000;
+  renderTeam(); renderAllMilestones(); calc();
+}
+
+// ─── UTILS ───
+function fmt(n) { return '₪'+Math.round(n).toLocaleString('he-IL'); }
+function escHtml(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+document.getElementById('load-modal').addEventListener('click', function(e) { if (e.target===this) closeModal(); });
+
+// ─── DEFAULT DATA ───
+function init() {
+  // Realistic Israeli high-tech team
+  addMember('',   'pm',    33000);
+  addMember('',   'arch',  52000);
+  addMember('',   'ai',    52000);
+  addMember('',   'fs',    40000);
+  addMember('',   'fs',    36000);  // second full-stack
+  addMember('',   'devops',41000);
+  addMember('',   'da',    49000);
+  addMember('',   'gfx',   22000);
+
+  // Milestone 1: Discovery & Architecture
+  const ms1pcts = {};
+  ms1pcts[team[0].id]=100; ms1pcts[team[1].id]=100; ms1pcts[team[2].id]=50;
+  ms1pcts[team[3].id]=0;   ms1pcts[team[4].id]=0;   ms1pcts[team[5].id]=0;
+  ms1pcts[team[6].id]=50;  ms1pcts[team[7].id]=20;
+  milestones.push({ id: msCounter++, name:'אפיון ואדריכלות', months:1.5, pcts:ms1pcts });
+
+  // Milestone 2: Development Sprint
+  const ms2pcts = {};
+  ms2pcts[team[0].id]=80; ms2pcts[team[1].id]=30; ms2pcts[team[2].id]=100;
+  ms2pcts[team[3].id]=100; ms2pcts[team[4].id]=100; ms2pcts[team[5].id]=100;
+  ms2pcts[team[6].id]=80; ms2pcts[team[7].id]=60;
+  milestones.push({ id: msCounter++, name:'פיתוח ספרינט ראשי', months:3, pcts:ms2pcts });
+
+  // Milestone 3: QA & Delivery
+  const ms3pcts = {};
+  ms3pcts[team[0].id]=100; ms3pcts[team[1].id]=80; ms3pcts[team[2].id]=50;
+  ms3pcts[team[3].id]=60;  ms3pcts[team[4].id]=60; ms3pcts[team[5].id]=80;
+  ms3pcts[team[6].id]=30;  ms3pcts[team[7].id]=100;
+  milestones.push({ id: msCounter++, name:'QA ומסירה', months:1, pcts:ms3pcts });
+
+  renderTeam();
+  renderAllMilestones();
+  calc();
+}
+
+init();
+</script>
+</body>
+</html>
