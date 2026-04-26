@@ -182,7 +182,7 @@ input[readonly] { background: var(--surface2); color: var(--text2); cursor: defa
 }
 
 /* ─── PRINT STYLES ─── */
-#print-overlay { display: none; }
+#print-overlay { display: none; position: fixed; top: -9999px; left: 0; width: 794px; background: #fff; z-index: -1; }
 @media print {
   body > *:not(#print-overlay) { display: none !important; }
   #print-overlay { display: block !important; font-family: 'Heebo', Arial, sans-serif; direction: rtl; color: #2C2A28; }
@@ -859,12 +859,89 @@ function exportPDF(mode) {
       <span>${proj}${client?' | '+client:''}</span>
     </div>`;
 
-  document.getElementById('print-overlay').innerHTML = html;
-  setTimeout(() => {
-    window.print();
-    showToast('PDF נוצר בהצלחה');
-  }, 120);
+  // Open a beautiful print-ready page in a new tab
+  const filename = `jeen-${mode==='pm'?'pm':'full'}-${proj.replace(/\s+/g,'-')}-${new Date().toISOString().slice(0,10)}`;
+  const fullPage = `<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>${proj} — Jeen Profit Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Heebo',Arial,sans-serif;direction:rtl;color:#2C2A28;background:#f5f4f0;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+  .print-btn-bar{background:#2C2A28;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .print-btn-bar span{color:rgba(255,255,255,0.6);font-size:13px}
+  .print-btn{background:#D95548;color:white;border:none;padding:9px 20px;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Heebo',sans-serif;display:flex;align-items:center;gap:7px}
+  .print-btn:hover{background:#a83e33}
+  .page{background:white;width:210mm;min-height:297mm;margin:24px auto;padding:14mm 12mm;box-shadow:0 4px 24px rgba(0,0,0,0.12)}
+  .po-header{background:#2C2A28;color:white;padding:10px 16px;display:flex;justify-content:space-between;align-items:center;border-radius:4px 4px 0 0;margin-bottom:0}
+  .po-title{font-size:18px;font-weight:700}
+  .po-subtitle{font-size:11px;color:rgba(255,255,255,0.6);margin-top:2px}
+  .po-date{font-size:10px;color:rgba(255,255,255,0.5);text-align:left}
+  .po-stripe{height:4px;background:#D95548;margin-bottom:18px}
+  .po-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+  .po-metric{border:1px solid #E8E4DF;border-radius:6px;padding:10px 8px;text-align:center}
+  .po-metric-label{font-size:9px;color:#9C9890;font-weight:500;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px}
+  .po-metric-val{font-size:17px;font-weight:700}
+  .po-bar-wrap{height:6px;background:#E8E4DF;border-radius:3px;overflow:hidden;margin-bottom:4px}
+  .po-bar{height:100%;border-radius:3px}
+  .po-bar-label{font-size:9px;color:#9C9890;text-align:center;margin-bottom:16px}
+  .po-section-title{font-size:10px;font-weight:600;color:#5C5650;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;margin-top:16px;border-bottom:1px solid #E8E4DF;padding-bottom:4px}
+  table{width:100%;border-collapse:collapse;font-size:11px}
+  th{background:#2C2A28;color:white;padding:6px 8px;text-align:right;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.3px}
+  td{padding:5px 8px;border-bottom:1px solid #F0EDE8}
+  tr:last-child td{border-bottom:none}
+  tr.ms-row td{background:#FBF9F5;font-weight:600;font-size:11.5px}
+  tr.total-row td{background:#F2F0EB;font-weight:700;border-top:2px solid #C8C5BF}
+  tr.profit-pos td{background:#EEF7F2;font-weight:700;color:#2A7A52}
+  tr.profit-neg td{background:#FAF0EA;font-weight:700;color:#D95548}
+  .num{text-align:left;direction:ltr;font-variant-numeric:tabular-nums}
+  .indent{padding-right:20px;color:#5C5650}
+  .role-dim{font-size:9.5px;color:#9C9890}
+  .insights{margin-top:4px}
+  .insight{border:1px solid #E8E4DF;border-radius:6px;padding:8px 10px;margin-bottom:6px}
+  .insight-title{font-size:11px;font-weight:600;margin-bottom:2px}
+  .insight-body{font-size:10.5px;color:#5C5650;line-height:1.5}
+  .itag{display:inline-block;font-size:9px;padding:2px 6px;border-radius:3px;font-weight:600;margin-left:5px}
+  .itag-ok{background:#EEF7F2;color:#2A7A52;border:1px solid #7BC8A0}
+  .itag-warn{background:#FEF5E6;color:#B87A18;border:1px solid #F0A433}
+  .itag-bad{background:#FAF0EA;color:#D95548;border:1px solid #F0A090}
+  .po-footer{margin-top:20px;border-top:1px solid #E8E4DF;padding-top:8px;display:flex;justify-content:space-between;font-size:9px;color:#9C9890}
+  @media print{
+    .print-btn-bar{display:none}
+    body{background:white}
+    .page{margin:0;box-shadow:none;border-radius:0;width:100%;padding:10mm 10mm}
+    @page{margin:0;size:A4}
+  }
+</style>
+</head>
+<body>
+<div class="print-btn-bar">
+  <span>${proj}${client?' | '+client:''} — ${mode==='pm'?'דוח מנהל פרויקט':'דוח מלא'}</span>
+  <button class="print-btn" onclick="window.print()">
+    <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M4 6V2h8v4M4 12H3a1 1 0 01-1-1V7a1 1 0 011-1h10a1 1 0 011 1v4a1 1 0 01-1 1h-1M4 9h8v5H4V9z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+    שמור כ-PDF
+  </button>
+</div>
+<div class="page">
+  ${html}
+</div>
+<script>
+  // Auto-focus for quick Ctrl+P
+  window.focus();
+<\/script>
+</body>
+</html>`;
+
+  const blob = new Blob([fullPage], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const tab = window.open(url, '_blank');
+  if (!tab) showToast('אפשר פתיחת חלונות קופצים בדפדפן');
+  else showToast('הדוח נפתח בטאב חדש — לחץ "שמור כ-PDF"');
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
+
 
 function fmtNum(n) { return '₪'+Math.round(n).toLocaleString('en-US'); }
 
