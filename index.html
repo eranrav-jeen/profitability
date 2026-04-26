@@ -325,7 +325,7 @@ input[readonly] { background: var(--surface2); color: var(--text2); cursor: defa
   </div>
   <div class="card-body">
     <div class="grid3">
-      <div class="field"><label>תקציב כולל (₪)</label><input type="number" id="budget" class="currency" value="800000" min="0" oninput="calc()"></div>
+      <div class="field"><label>תקציב כולל (₪)</label><input type="number" id="budget" class="currency" value="" min="0" oninput="calc()" placeholder="0"></div>
       <div class="field"><label>עלות כ״א מחושבת (₪)</label><input type="text" id="computed-cost" class="currency" readonly></div>
       <div class="field"><label>רווח תפעולי מחושב (₪)</label><input type="text" id="computed-profit" class="currency" readonly></div>
     </div>
@@ -619,7 +619,7 @@ function loadFromLocal(id){const saves=getLocalSaves();if(saves[id]){applyState(
 function deleteLocal(id,e){e.stopPropagation();const saves=getLocalSaves();delete saves[id];localStorage.setItem('profitCalcSaves',JSON.stringify(saves));openLoad();}
 function loadFromFile(event){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{try{applyState(JSON.parse(e.target.result));showToast('הקובץ נטען בהצלחה');closeModal();}catch{showToast('שגיאה בטעינת הקובץ');}};reader.readAsText(file);event.target.value='';}
 function closeModal(){document.getElementById('load-modal').classList.remove('active');}
-function newProject(){if(team.length>0&&!confirm('ליצור פרויקט חדש? הנתונים הנוכחיים יאופסו.'))return;team=[];milestones=[];memberCounter=0;msCounter=0;document.getElementById('projectName').value='';document.getElementById('clientName').value='';document.getElementById('budget').value=800000;renderTeam();renderAllMilestones();calc();}
+function newProject(){if(team.length>0&&!confirm('ליצור פרויקט חדש? הנתונים הנוכחיים יאופסו.'))return;team=[];milestones=[];memberCounter=0;msCounter=0;document.getElementById('projectName').value='';document.getElementById('clientName').value='';document.getElementById('budget').value='';renderTeam();renderAllMilestones();calc();}
 function fmt(n){return '₪'+Math.round(n).toLocaleString('he-IL');}
 function escHtml(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
@@ -868,15 +868,7 @@ function exportPDF(mode) {
 
 function fmtNum(n) { return '₪'+Math.round(n).toLocaleString('en-US'); }
 
-function init() { addMember('','arch',52000); addMember('','ai',52000);
-  addMember('','fs',40000); addMember('','fs',36000);
-  addMember('','devops',41000); addMember('','da',49000); addMember('','gfx',22000);
-  const ms1={};ms1[team[0].id]=100;ms1[team[1].id]=100;ms1[team[2].id]=50;ms1[team[3].id]=0;ms1[team[4].id]=0;ms1[team[5].id]=0;ms1[team[6].id]=50;ms1[team[7].id]=20;
-  milestones.push({id:msCounter++,name:'אפיון ואדריכלות',months:1.5,pcts:ms1});
-  const ms2={};ms2[team[0].id]=80;ms2[team[1].id]=30;ms2[team[2].id]=100;ms2[team[3].id]=100;ms2[team[4].id]=100;ms2[team[5].id]=100;ms2[team[6].id]=80;ms2[team[7].id]=60;
-  milestones.push({id:msCounter++,name:'פיתוח ספרינט ראשי',months:3,pcts:ms2});
-  const ms3={};ms3[team[0].id]=100;ms3[team[1].id]=80;ms3[team[2].id]=50;ms3[team[3].id]=60;ms3[team[4].id]=60;ms3[team[5].id]=80;ms3[team[6].id]=30;ms3[team[7].id]=100;
-  milestones.push({id:msCounter++,name:'QA ומסירה',months:1,pcts:ms3});
+function init() {
   renderTeam(); renderAllMilestones(); calc();
 }
 init();
