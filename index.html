@@ -48,6 +48,8 @@ body { font-family: 'Heebo', sans-serif; background: var(--bg); color: var(--tex
 .btn-excel:hover { background: #175f36; }
 .btn-pdf { background: #C0392B; color: white; border: 1px solid #962d22; }
 .btn-pdf:hover { background: #962d22; }
+.btn-pdf-pm { background: #7B3FA0; color: white; border: 1px solid #5e2f7a; }
+.btn-pdf-pm:hover { background: #5e2f7a; }
 .btn-load { background: rgba(201,160,212,0.22); color: #E8D0EF; border: 1px solid rgba(201,160,212,0.35); }
 .btn-load:hover { background: rgba(201,160,212,0.32); }
 .btn-save { background: rgba(240,164,51,0.22); color: #F5C878; border: 1px solid rgba(240,164,51,0.35); }
@@ -178,6 +180,48 @@ input[readonly] { background: var(--surface2); color: var(--text2); cursor: defa
   .logo-img { height: 26px; }
   .header-divider, .header-tagline { display: none; }
 }
+
+/* ─── PRINT STYLES ─── */
+#print-overlay { display: none; }
+@media print {
+  body > *:not(#print-overlay) { display: none !important; }
+  #print-overlay { display: block !important; font-family: 'Heebo', Arial, sans-serif; direction: rtl; color: #2C2A28; }
+  @page { margin: 14mm 12mm; size: A4; }
+  .po-header { background: #2C2A28 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; color: white; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 0; }
+  .po-stripe { height: 4px; background: #D95548 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; margin-bottom: 16px; }
+  .po-title { font-size: 18px; font-weight: 700; margin-bottom: 2px; }
+  .po-subtitle { font-size: 11px; color: #9C9890; }
+  .po-date { font-size: 10px; color: rgba(255,255,255,0.6); }
+  .po-metrics { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 12px; }
+  .po-metric { border: 1px solid #E8E4DF; border-radius: 6px; padding: 10px 8px; text-align: center; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .po-metric-label { font-size: 9px; color: #9C9890; font-weight: 500; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+  .po-metric-val { font-size: 16px; font-weight: 700; }
+  .po-bar-wrap { height: 6px; background: #E8E4DF !important; border-radius: 3px; overflow: hidden; margin-bottom: 4px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .po-bar { height: 100%; border-radius: 3px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .po-bar-label { font-size: 9px; color: #9C9890; text-align: center; margin-bottom: 14px; }
+  .po-section-title { font-size: 11px; font-weight: 600; color: #5C5650; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; margin-top: 14px; border-bottom: 1px solid #E8E4DF; padding-bottom: 4px; }
+  table.po-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  table.po-table th { background: #2C2A28 !important; color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; padding: 5px 7px; text-align: right; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+  table.po-table td { padding: 5px 7px; border-bottom: 1px solid #F0EDE8; font-size: 11px; }
+  table.po-table tr.ms-row td { background: #FBF9F5 !important; font-weight: 600; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  table.po-table tr.total-row td { background: #F2F0EB !important; font-weight: 700; border-top: 2px solid #C8C5BF; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  table.po-table tr.profit-row-pos td { background: #EEF7F2 !important; font-weight: 700; color: #2A7A52; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  table.po-table tr.profit-row-neg td { background: #FAF0EA !important; font-weight: 700; color: #D95548; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .po-num { text-align: left; direction: ltr; font-variant-numeric: tabular-nums; }
+  .po-insights { margin-top: 14px; }
+  .po-insight { border: 1px solid #E8E4DF; border-radius: 6px; padding: 8px 10px; margin-bottom: 6px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .po-insight-title { font-size: 10px; font-weight: 600; margin-bottom: 2px; }
+  .po-insight-body { font-size: 10px; color: #5C5650; }
+  .po-tag { display: inline-block; font-size: 9px; padding: 1px 5px; border-radius: 3px; font-weight: 600; margin-left: 4px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .po-tag-warn { background: #FEF5E6 !important; color: #B87A18; border: 1px solid #F0A433; }
+  .po-tag-ok { background: #EEF7F2 !important; color: #2A7A52; border: 1px solid #7BC8A0; }
+  .po-tag-bad { background: #FAF0EA !important; color: #D95548; border: 1px solid #F0A090; }
+  .po-footer { margin-top: 20px; border-top: 1px solid #E8E4DF; padding-top: 6px; display: flex; justify-content: space-between; font-size: 9px; color: #9C9890; }
+  .po-indent { padding-right: 18px; }
+  .color-green { color: #2A7A52; }
+  .color-red { color: #D95548; }
+  .color-amber { color: #B87A18; }
+}
 </style>
 </head>
 <body>
@@ -193,9 +237,13 @@ input[readonly] { background: var(--surface2); color: var(--text2); cursor: defa
       <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M5 5.5l2 2.5-2 2.5M9 10.5h2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
       <span class="btn-label">Excel</span>
     </button>
-    <button class="btn btn-pdf" onclick="exportPDF()">
+    <button class="btn btn-pdf" onclick="exportPDF('full')">
       <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M10 2v4h3M5 8h3M5 11h5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-      <span class="btn-label">PDF</span>
+      <span class="btn-label">PDF מלא</span>
+    </button>
+    <button class="btn btn-pdf-pm" onclick="exportPDF('pm')">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 13c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span class="btn-label">PDF מנהל</span>
     </button>
     <button class="btn btn-load" onclick="openLoad()">
       <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 11v2a1 1 0 001 1h10a1 1 0 001-1v-2M8 2v8M5 7l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -315,6 +363,8 @@ input[readonly] { background: var(--surface2); color: var(--text2); cursor: defa
 </div>
 
 </main>
+
+<div id="print-overlay"></div>
 
 <div class="modal-overlay" id="load-modal">
   <div class="modal">
@@ -643,176 +693,177 @@ function exportExcel() {
 }
 
 // ─── EXPORT TO PDF ───
-function exportPDF() {
-  const { jsPDF } = window.jspdf;
+function exportPDF(mode) {
   const budget = parseFloat(document.getElementById('budget').value)||0;
   const proj = document.getElementById('projectName').value || 'פרויקט';
   const client = document.getElementById('clientName').value || '';
+  const dateStr = new Date().toLocaleDateString('he-IL');
 
+  // ── Compute totals ──
   let totalCost = 0;
   const breakdown = [];
   milestones.forEach(ms => {
     let msCost = 0;
-    const rows = [];
+    const contribs = [];
     team.forEach(m => {
       const pct = ms.pcts[m.id]||0;
       const contrib = m.cost*(pct/100)*ms.months;
       msCost += contrib;
       if (contrib > 0) {
         const role = ROLE_TYPES.find(r=>r.id===m.roleId)||ROLE_TYPES[0];
-        rows.push([m.name||role.label, role.label, ms.months, pct+'%', fmtNum(contrib), budget>0?(contrib/budget*100).toFixed(1)+'%':'']);
+        contribs.push({ name: m.name||role.label, roleLabel: role.label, pct, contrib, months: ms.months });
       }
     });
     totalCost += msCost;
-    breakdown.push({ name: ms.name, cost: msCost, rows });
+    breakdown.push({ name: ms.name, months: ms.months, cost: msCost, contribs });
   });
   const profit = budget - totalCost;
   const margin = budget > 0 ? (profit/budget*100) : 0;
+  const profitColor = profit >= 0 ? '#2A7A52' : '#D95548';
+  const marginColor = margin >= 20 ? '#2A7A52' : margin >= 0 ? '#B87A18' : '#D95548';
+  const barPct = budget > 0 ? Math.max(0, Math.min(100, profit/budget*100)) : 0;
+  const barColor = profit >= 0 ? '#2A7A52' : '#D95548';
 
-  const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
-  const W = doc.internal.pageSize.getWidth();
-  let y = 0;
-
-  // Header bar
-  doc.setFillColor(44,42,40);
-  doc.rect(0,0,W,18,'F');
-  doc.setFillColor(217,85,72);
-  doc.rect(0,18,W,2,'F');
-
-  // Logo text (Jeen wordmark in header since font embedding not available)
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(16);
-  doc.setTextColor(255,255,255);
-  doc.text('Jeen', 14, 12);
-  doc.setFontSize(9);
-  doc.setFont('helvetica','normal');
-  doc.setTextColor(180,175,170);
-  doc.text('Project Profit Calculator', 32, 12);
-  y = 28;
-
-  // Project info
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(13);
-  doc.setTextColor(44,42,40);
-  const titleText = proj + (client ? '  |  ' + client : '');
-  doc.text(titleText, W-14, y, {align:'right'});
-  y += 6;
-  doc.setFont('helvetica','normal');
-  doc.setFontSize(8);
-  doc.setTextColor(130,125,120);
-  doc.text(new Date().toLocaleDateString('he-IL'), W-14, y, {align:'right'});
-  y += 8;
-
-  // Summary metrics boxes
-  const metrics = [
-    {label:'Budget', value: fmtNum(budget), color:[232,240,248]},
-    {label:'Total Cost', value: fmtNum(totalCost), color:[242,240,235]},
-    {label:'Operating Profit', value: fmtNum(profit), color: profit>=0?[238,247,242]:[250,234,233]},
-    {label:'Margin', value: margin.toFixed(1)+'%', color: margin>=0?[238,247,242]:[250,234,233]},
-  ];
-  const mW = (W-28-9)/4;
-  metrics.forEach((m,i) => {
-    const x = 14 + i*(mW+3);
-    doc.setFillColor(...m.color);
-    doc.roundedRect(x, y, mW, 18, 2, 2, 'F');
-    doc.setFont('helvetica','normal');
-    doc.setFontSize(7);
-    doc.setTextColor(130,125,120);
-    doc.text(m.label, x+mW/2, y+6, {align:'center'});
-    doc.setFont('helvetica','bold');
-    doc.setFontSize(10);
-    if (i===2) doc.setTextColor(profit>=0?42:217, profit>=0?122:85, profit>=0?82:72);
-    else doc.setTextColor(44,42,40);
-    doc.text(m.value, x+mW/2, y+13, {align:'center'});
-  });
-  y += 24;
-
-  // Profit bar
-  doc.setFillColor(232,228,223);
-  doc.roundedRect(14, y, W-28, 4, 2, 2, 'F');
-  if (budget>0) {
-    const bPct = Math.max(0,Math.min(1,profit/budget));
-    const col = profit>=0 ? [42,122,82] : [217,85,72];
-    doc.setFillColor(...col);
-    doc.roundedRect(14, y, (W-28)*bPct, 4, 2, 2, 'F');
+  // ── Insights ──
+  const insights = [];
+  if (margin < 0) {
+    insights.push({ tag:'bad', tagLabel:'הפסד', title:'הפרויקט מפסידי', body:`עלות כוח האדם (${fmt(totalCost)}) עולה על התקציב (${fmt(budget)}) ב-${fmt(-profit)}.` });
+  } else if (margin < 15) {
+    insights.push({ tag:'warn', tagLabel:'סיכון', title:'מרווח נמוך', body:`מרווח של ${margin.toFixed(1)}% נמוך לפרויקטי טכנולוגיה. מומלץ לשקול צמצום היקף או העלאת מחיר.` });
+  } else if (margin >= 30) {
+    insights.push({ tag:'ok', tagLabel:'מצוין', title:'מרווח בריא', body:`מרווח של ${margin.toFixed(1)}% מעיד על פרויקט רווחי ויציב.` });
+  } else {
+    insights.push({ tag:'ok', tagLabel:'טוב', title:'מרווח סביר', body:`מרווח של ${margin.toFixed(1)}% — בטווח המקובל לפרויקטי טכנולוגיה.` });
   }
-  y += 10;
 
-  // Team table
-  doc.setFont('helvetica','bold');
-  doc.setFontSize(9);
-  doc.setTextColor(44,42,40);
-  doc.text('Team — Monthly Employer Cost', 14, y);
-  y += 4;
-  doc.autoTable({
-    startY: y,
-    head: [['Name','Role','Employer Cost (ILS)','Est. Gross (ILS)']],
-    body: team.map(m => {
-      const role = ROLE_TYPES.find(r=>r.id===m.roleId)||ROLE_TYPES[0];
-      return [m.name||role.label, role.label, fmtNum(m.cost), fmtNum(Math.round(m.cost/1.35))];
-    }),
-    theme:'grid',
-    styles:{font:'helvetica',fontSize:8,cellPadding:3,textColor:[44,42,40]},
-    headStyles:{fillColor:[44,42,40],textColor:[255,255,255],fontStyle:'bold',fontSize:8},
-    alternateRowStyles:{fillColor:[248,247,245]},
-    columnStyles:{2:{halign:'right'},3:{halign:'right'}},
-    margin:{left:14,right:14},
-  });
-  y = doc.lastAutoTable.finalY + 8;
-
-  // Milestones breakdown
+  // Largest cost milestone
   if (breakdown.length > 0) {
-    doc.setFont('helvetica','bold');
-    doc.setFontSize(9);
-    doc.setTextColor(44,42,40);
-    doc.text('Milestone Breakdown', 14, y);
-    y += 4;
-    const allRows = [];
-    breakdown.forEach(b => {
-      allRows.push({ cells: [b.name, '', '', '', fmtNum(b.cost), budget>0?(b.cost/budget*100).toFixed(1)+'%':''], isMilestone: true });
-      b.rows.forEach(r => allRows.push({ cells: r, isMilestone: false }));
-    });
-    allRows.push({ cells: ['Total Manpower Cost','','','',fmtNum(totalCost),budget>0?(totalCost/budget*100).toFixed(1)+'%':''], isTotal: true });
-    allRows.push({ cells: ['Operating Profit','','','',fmtNum(profit),margin.toFixed(1)+'%'], isProfit: true });
-
-    doc.autoTable({
-      startY: y,
-      head: [['Milestone / Employee','Role','Months','%','Cost (ILS)','% of Budget']],
-      body: allRows.map(r=>r.cells),
-      theme:'grid',
-      styles:{font:'helvetica',fontSize:7.5,cellPadding:2.5,textColor:[44,42,40]},
-      headStyles:{fillColor:[44,42,40],textColor:[255,255,255],fontStyle:'bold',fontSize:7.5},
-      columnStyles:{2:{halign:'center'},3:{halign:'center'},4:{halign:'right'},5:{halign:'right'}},
-      margin:{left:14,right:14},
-      didParseCell: function(data) {
-        const r = allRows[data.row.index];
-        if (!r) return;
-        if (r.isMilestone) { data.cell.styles.fillColor=[250,244,230]; data.cell.styles.fontStyle='bold'; }
-        if (r.isTotal) { data.cell.styles.fillColor=[232,228,223]; data.cell.styles.fontStyle='bold'; }
-        if (r.isProfit) {
-          data.cell.styles.fillColor = profit>=0 ? [238,247,242] : [250,234,233];
-          data.cell.styles.fontStyle='bold';
-          data.cell.styles.textColor = profit>=0 ? [42,122,82] : [217,85,72];
-        }
-      }
-    });
+    const topMs = [...breakdown].sort((a,b)=>b.cost-a.cost)[0];
+    const topPct = budget > 0 ? (topMs.cost/budget*100).toFixed(1) : 0;
+    insights.push({ tag:'warn', tagLabel:'עלות גבוהה', title:`"${topMs.name}" — השלב היקר ביותר`, body:`עלות השלב ${fmt(topMs.cost)} מהווה ${topPct}% מהתקציב הכולל.` });
   }
 
-  // Footer
-  const pages = doc.internal.getNumberOfPages();
-  for (let p=1;p<=pages;p++) {
-    doc.setPage(p);
-    doc.setFillColor(44,42,40);
-    doc.rect(0, doc.internal.pageSize.getHeight()-8, W, 8, 'F');
-    doc.setFont('helvetica','normal');
-    doc.setFontSize(7);
-    doc.setTextColor(130,125,120);
-    doc.text('Generated by Jeen Profit Calculator', 14, doc.internal.pageSize.getHeight()-3);
-    doc.text(`Page ${p} of ${pages}`, W-14, doc.internal.pageSize.getHeight()-3, {align:'right'});
+  // Team utilization
+  const totalManMonths = team.reduce((sum,m) => {
+    let mm = 0;
+    milestones.forEach(ms => { mm += (ms.pcts[m.id]||0)/100 * ms.months; });
+    return sum + mm;
+  }, 0);
+  const maxManMonths = team.length * (milestones.reduce((s,ms)=>s+ms.months,0));
+  if (maxManMonths > 0) {
+    const util = (totalManMonths/maxManMonths*100).toFixed(0);
+    const uTag = util >= 75 ? 'ok' : util >= 50 ? 'warn' : 'bad';
+    insights.push({ tag: uTag, tagLabel: 'ניצולת', title: `ניצולת צוות: ${util}%`, body: `ממוצע מעורבות הצוות על פני כל השלבים הוא ${util}%. ניצולת גבוהה מוסיפה לרווחיות.` });
   }
 
-  doc.save(`profit-${proj.replace(/\s+/g,'-')}-${new Date().toISOString().slice(0,10)}.pdf`);
-  showToast('קובץ PDF נוצר בהצלחה');
+  // ── Build HTML ──
+  const isFullMode = mode === 'full';
+  const titleLine = `<div class="po-title">${proj}</div><div class="po-subtitle">${client || '&nbsp;'}</div>`;
+
+  let metricsHtml = `
+    <div class="po-metrics">
+      <div class="po-metric" style="background:#EAF0F8"><div class="po-metric-label">תקציב</div><div class="po-metric-val" style="color:#1A4A7A">${fmt(budget)}</div></div>
+      <div class="po-metric" style="background:#F2F0EB"><div class="po-metric-label">עלות כ״א</div><div class="po-metric-val">${fmt(totalCost)}</div></div>
+      <div class="po-metric" style="background:${profit>=0?'#EEF7F2':'#FAF0EA'}"><div class="po-metric-label">רווח תפעולי</div><div class="po-metric-val" style="color:${profitColor}">${fmt(profit)}</div></div>
+      <div class="po-metric" style="background:${profit>=0?'#EEF7F2':'#FAF0EA'}"><div class="po-metric-label">מרווח</div><div class="po-metric-val" style="color:${marginColor}">${margin.toFixed(1)}%</div></div>
+    </div>
+    <div class="po-bar-wrap"><div class="po-bar" style="width:${barPct}%;background:${barColor}"></div></div>
+    <div class="po-bar-label">מרווח: ${margin.toFixed(1)}% | עלות כ״א: ${fmt(totalCost)} | תקציב: ${fmt(budget)}</div>`;
+
+  // ── Team table (full mode only) ──
+  let teamHtml = '';
+  if (isFullMode) {
+    teamHtml = `<div class="po-section-title">כוח אדם — עלות מעסיק חודשית</div>
+    <table class="po-table">
+      <thead><tr><th>שם</th><th>תפקיד</th><th class="po-num">עלות מעסיק (₪)</th><th class="po-num">שכר ברוטו משוער (₪)</th></tr></thead>
+      <tbody>
+        ${team.map(m => {
+          const role = ROLE_TYPES.find(r=>r.id===m.roleId)||ROLE_TYPES[0];
+          return `<tr><td>${m.name||role.label}</td><td>${role.icon} ${role.label}</td><td class="po-num">${fmt(m.cost)}</td><td class="po-num">${fmt(Math.round(m.cost/1.35))}</td></tr>`;
+        }).join('')}
+      </tbody>
+    </table>`;
+  } else {
+    // PM mode: team composition only, no costs
+    teamHtml = `<div class="po-section-title">הרכב צוות (${team.length} חברים)</div>
+    <table class="po-table">
+      <thead><tr><th>שם</th><th>תפקיד</th><th class="po-num">ניצולת ממוצעת</th></tr></thead>
+      <tbody>
+        ${team.map(m => {
+          const role = ROLE_TYPES.find(r=>r.id===m.roleId)||ROLE_TYPES[0];
+          const totalPctSum = milestones.reduce((s,ms)=>s+(ms.pcts[m.id]||0),0);
+          const avgPct = milestones.length > 0 ? (totalPctSum/milestones.length).toFixed(0) : 0;
+          return `<tr><td>${m.name||role.label}</td><td>${role.icon} ${role.label}</td><td class="po-num">${avgPct}%</td></tr>`;
+        }).join('')}
+      </tbody>
+    </table>`;
+  }
+
+  // ── Milestones breakdown ──
+  let msHtml = `<div class="po-section-title">פירוט אבני דרך</div>
+  <table class="po-table">
+    <thead><tr><th>שלב / עובד</th><th class="po-num">חודשים</th><th class="po-num">%</th>
+      ${isFullMode ? '<th class="po-num">עלות (₪)</th><th class="po-num">% מתקציב</th>' : '<th class="po-num">% מתקציב</th>'}
+    </tr></thead>
+    <tbody>`;
+  breakdown.forEach(b => {
+    const bPctB = budget>0?(b.cost/budget*100).toFixed(1):'—';
+    msHtml += `<tr class="ms-row"><td colspan="2">${b.name}</td><td class="po-num">${b.months}</td>
+      ${isFullMode ? `<td class="po-num">${fmt(b.cost)}</td><td class="po-num">${bPctB}%</td>` : `<td class="po-num">${bPctB}%</td>`}
+    </tr>`;
+    b.contribs.forEach(c => {
+      const cPctB = budget>0?(c.contrib/budget*100).toFixed(1):'—';
+      msHtml += `<tr class="po-indent"><td>${c.name} <span style="color:#9C9890;font-size:9px">· ${c.roleLabel}</span></td>
+        <td class="po-num">${c.months}</td><td class="po-num">${c.pct}%</td>
+        ${isFullMode ? `<td class="po-num">${fmt(c.contrib)}</td><td class="po-num">${cPctB}%</td>` : `<td class="po-num">${cPctB}%</td>`}
+      </tr>`;
+    });
+  });
+  const totalPctB = budget>0?(totalCost/budget*100).toFixed(1):'—';
+  msHtml += `<tr class="total-row"><td colspan="3">סה״כ עלות כ״א</td>
+    ${isFullMode ? `<td class="po-num">${fmt(totalCost)}</td><td class="po-num">${totalPctB}%</td>` : `<td class="po-num">${totalPctB}%</td>`}
+  </tr>
+  <tr class="${profit>=0?'profit-row-pos':'profit-row-neg'}"><td colspan="3">רווח תפעולי</td>
+    ${isFullMode ? `<td class="po-num">${fmt(profit)}</td><td class="po-num">${margin.toFixed(1)}%</td>` : `<td class="po-num">${margin.toFixed(1)}%</td>`}
+  </tr>
+  </tbody></table>`;
+
+  // ── Insights (PM mode) ──
+  let insightsHtml = '';
+  if (!isFullMode) {
+    insightsHtml = `<div class="po-section-title">תובנות ניהוליות</div><div class="po-insights">`;
+    insights.forEach(ins => {
+      const tagClass = `po-tag-${ins.tag}`;
+      insightsHtml += `<div class="po-insight">
+        <div class="po-insight-title"><span class="po-tag ${tagClass}">${ins.tagLabel}</span>${ins.title}</div>
+        <div class="po-insight-body">${ins.body}</div>
+      </div>`;
+    });
+    insightsHtml += '</div>';
+  }
+
+  const modeLabel = isFullMode ? 'PDF מלא — כולל פירוט שכר' : 'PDF מנהל פרויקט';
+
+  const html = `
+    <div class="po-header" style="background:#2C2A28;color:white;padding:10px 16px;display:flex;justify-content:space-between;align-items:center">
+      <div>${titleLine}</div>
+      <div class="po-date">${dateStr} | ${modeLabel}</div>
+    </div>
+    <div class="po-stripe" style="height:4px;background:#D95548;margin-bottom:16px"></div>
+    ${metricsHtml}
+    ${teamHtml}
+    ${msHtml}
+    ${insightsHtml}
+    <div class="po-footer">
+      <span>נוצר על ידי Jeen Profit Calculator</span>
+      <span>${proj}${client?' | '+client:''}</span>
+    </div>`;
+
+  document.getElementById('print-overlay').innerHTML = html;
+  setTimeout(() => {
+    window.print();
+    showToast('PDF נוצר בהצלחה');
+  }, 120);
 }
 
 function fmtNum(n) { return '₪'+Math.round(n).toLocaleString('en-US'); }
@@ -831,7 +882,5 @@ function init() { addMember('','arch',52000); addMember('','ai',52000);
 init();
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </body>
 </html>
