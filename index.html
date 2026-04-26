@@ -377,7 +377,7 @@ function renderTeam() {
         oninput="team[${i}].name=this.value;renderAllMilestones();calc()"></td>
       <td>
         <select onchange="team[${i}].roleId=this.value;renderTeam();renderAllMilestones();calc()">
-          ${ROLE_TYPES.map(r=>`<option value="${r.id}" ${r.id===m.roleId?'selected':''}}>${r.icon} ${r.label}</option>`).join('')}
+          ${ROLE_TYPES.map(r=>`<option value="${r.id}" ${r.id===m.roleId?'selected':''}>${r.icon} ${r.label}</option>`).join('')}
         </select>
       </td>
       <td><input type="number" class="currency" min="0" step="500" value="${m.cost}"
@@ -721,7 +721,6 @@ function exportPDF() {
     doc.text(m.label, x+mW/2, y+6, {align:'center'});
     doc.setFont('helvetica','bold');
     doc.setFontSize(10);
-    doc.setTextColor(profit>=0&&i>=2?42,122,82:i===2?217,85,72:44,42,40);
     if (i===2) doc.setTextColor(profit>=0?42:217, profit>=0?122:85, profit>=0?82:72);
     else doc.setTextColor(44,42,40);
     doc.text(m.value, x+mW/2, y+13, {align:'center'});
@@ -818,7 +817,7 @@ function exportPDF() {
 
 function fmtNum(n) { return '₪'+Math.round(n).toLocaleString('en-US'); }
 
-  addMember('','pm',33000); addMember('','arch',52000); addMember('','ai',52000);
+function init() { addMember('','arch',52000); addMember('','ai',52000);
   addMember('','fs',40000); addMember('','fs',36000);
   addMember('','devops',41000); addMember('','da',49000); addMember('','gfx',22000);
   const ms1={};ms1[team[0].id]=100;ms1[team[1].id]=100;ms1[team[2].id]=50;ms1[team[3].id]=0;ms1[team[4].id]=0;ms1[team[5].id]=0;ms1[team[6].id]=50;ms1[team[7].id]=20;
