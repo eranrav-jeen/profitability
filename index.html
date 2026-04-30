@@ -401,7 +401,7 @@ let msCounter = 0;
 function addMember(name, roleId, cost) {
   const id = memberCounter++;
   const role = ROLE_TYPES.find(r => r.id === (roleId||'fs')) || ROLE_TYPES[3];
-  team.push({ id, name: name||'', roleId: role.id, cost: cost||role.defaultCost });
+  team.push({ id, name: name||'', roleId: role.id, cost: cost||0 });
   renderTeam();
   renderAllMilestones();
   calc();
