@@ -105,6 +105,8 @@ input[readonly] { background: var(--surface2); color: var(--text2); cursor: defa
 .milestone-title-input:focus { outline: 1px solid var(--border-strong); border-radius: 3px; }
 .del-ms { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 18px; line-height: 1; padding: 0 2px; transition: color 0.15s; }
 .del-ms:hover { color: var(--coral); }
+.dup-ms { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 13px; line-height: 1; padding: 0 4px; transition: color 0.15s; display:flex; align-items:center; }
+.dup-ms:hover { color: var(--amber-dark); }
 .milestone-body { padding: 14px; }
 .ms-meta { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
 
@@ -453,6 +455,18 @@ function removeMilestone(id) {
   calc();
 }
 
+function duplicateMilestone(id) {
+  const src = milestones.find(m => m.id === id);
+  if (!src) return;
+  const newId = msCounter++;
+  const copy = { id: newId, name: src.name + ' (עותק)', months: src.months, pcts: { ...src.pcts } };
+  const srcIdx = milestones.findIndex(m => m.id === id);
+  milestones.splice(srcIdx + 1, 0, copy);
+  renderAllMilestones();
+  calc();
+  showToast('אבן הדרך שוכפלה');
+}
+
 function renderAllMilestones() {
   const c = document.getElementById('milestones-container');
   if (milestones.length === 0) { c.innerHTML = ''; return; }
@@ -465,6 +479,9 @@ function renderMilestoneHTML(ms, idx) {
       <div class="milestone-header">
         <div class="milestone-num">${idx+1}</div>
         <input class="milestone-title-input" type="text" value="${escHtml(ms.name)}" oninput="milestones[${idx}].name=this.value;calc()">
+        <button class="dup-ms" onclick="duplicateMilestone(${ms.id})" title="שכפל אבן דרך">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 11V3h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
         <button class="del-ms" onclick="removeMilestone(${ms.id})">✕</button>
       </div>
       <div class="milestone-body" style="color:var(--text3);font-size:13px;text-align:center;padding:12px">הוסף חברי צוות כדי להגדיר אחוזי מעורבות</div>
@@ -485,6 +502,9 @@ function renderMilestoneHTML(ms, idx) {
     <div class="milestone-header">
       <div class="milestone-num">${idx+1}</div>
       <input class="milestone-title-input" type="text" value="${escHtml(ms.name)}" oninput="milestones[${idx}].name=this.value;calc()">
+      <button class="dup-ms" onclick="duplicateMilestone(${ms.id})" title="שכפל אבן דרך">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 11V3h8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
       <button class="del-ms" onclick="removeMilestone(${ms.id})">✕</button>
     </div>
     <div class="milestone-body">
