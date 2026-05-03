@@ -818,12 +818,15 @@ function exportExcel() {
 
 // ─── EXPORT TO PDF ───
 function exportPDF(mode) {
-  const budget = parseFloat(document.getElementById('budget').value)||0;
-  const proj = document.getElementById('projectName').value || 'פרויקט';
+  const bcmPct          = parseFloat(document.getElementById('bcmPct').value) || 0;
+  const targetProfitPct = parseFloat(document.getElementById('targetProfitPct').value) || 0;
+  const salaryIncrease  = parseFloat(document.getElementById('salaryIncreasePct').value) || 0;
+  const overdueHours    = parseFloat(document.getElementById('overdueHoursPct').value) || 0;
+  const proj   = document.getElementById('projectName').value || 'פרויקט';
   const client = document.getElementById('clientName').value || '';
   const dateStr = new Date().toLocaleDateString('he-IL');
 
-  // ── Compute totals ──
+  // ── Compute totals (same formula as calc()) ──
   let totalCost = 0;
   const breakdown = [];
   milestones.forEach(ms => {
@@ -841,6 +844,8 @@ function exportPDF(mode) {
     totalCost += msCost;
     breakdown.push({ name: ms.name, months: ms.months, cost: msCost, contribs });
   });
+  const costWithBcm = totalCost * (1 + bcmPct / 100);
+  const budget = targetProfitPct < 100 ? costWithBcm / (1 - targetProfitPct / 100) : 0;
   const profit = budget - totalCost;
   const margin = budget > 0 ? (profit/budget*100) : 0;
   const profitColor = profit >= 0 ? '#2A7A52' : '#D95548';
