@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAEN0lEQVR4nK1XTYgcVRD+vuruyWaZDYuaDQEJ5CAEQy6yIhJkE7wE8eDBXTxEPKiLHsSToKdO3109Jx7EiAgzgVwkhxw0uQlGL8aDBiJIYE2iu+5m/2a6X30eenZ+YrKZnrXgzTTNq6++qq6qV4/YpaQp7AxS3Pz954Vxw1tFCOMAAYCAIBCEgN6vYlpoQ99uIXmTuzH+3cxMfPLq1eLmG6/MH4iTs8ubWwJIPAJVkiZrNf4disu2GwInpqYEABZ0Kg/BRYZHGQcAklxpt91cJ00Q1VCkVCaJQyxTQ9GAR6QTMkDDR5Q0EYURFOcYmNFJaojlnGOQKhh7GAeR8bVr15KDtw99sCepnWq1W0kfw84mlX4JIIk9tdr6RnvjPMnzStMuCUEjkYgP3H1yYeqx/e9tbmygNp5ABNhxThQodgIrlGls2L934sVb3yxu8uWDTQAwOYkInQ3VCETi6aWVpeAhlBUDDgCVhQSUBSQSyKP6voTG1wA0ASAYpM6eyhEgbczdo+2Q4z6g/poiCUGxS2Zgt4LMSRgwSgRMkHWCO7Rsx2jwJSsbBwArtXaX0V7ZhQECJMTK6v2MI+fILhjgQHX7AwYDRoLYJsCRwtdvkBytLYlSJ5OrahNgjwJhkSSvguCSCEUlgcrxE/p9FvBbPY4NQAD0yCWhqMcxHVyMu5+gYhC2tzdmG1HQ1wuLeT4zUas9V7akBxVq750BWHe/3bZkPi6bfD/kkDHoNK7Zp/eT2cU7Z+fnX3iJ68dd+YScCso7gHFPyYMimhJjcTvop2c+b96NH4A9lLDTfHH0hJSmxizLAVyp5ESa2sifoCu/XCGzLADE6oW3jwT3MQDI6UwAQCZFQUmQ/3qz9sf0h+dWlM7EyK4GZpnHZR+o3kZ7KXjFlxunD48l/pX76rNGxTAiQSe3CUgCTH7sSPvWyoXX3+WrX15SmhqyTAZUG2S2ZbtwmGWeoPhkrB49X4TCBEHukDtc5ZKE4GIt1iGo/cXyxfcnkWWSQCuTcPROeL3RqLnhWGstd/LhjhjJe5tFSIxPoFg6TEDN5qyNPJSyMyYcrS8SCt0DeWfWMEkD3tr/cBgC2MH1wX3/GdpHPozCfcBVJOl7NsI0SgQiVGr9XRGAvI+BAfDuFFoJqPzkN4ASYkg9AkjyAQIjD/gCgKeA7u1vOCUpN++aNIkC6Pdn504IJN2ECAB+nDrughGQkzsnkyCZGRVHRY8Aw6XJiUmjGY0Go4E0mBlIgmD53322OIkTK0yXAGB6ejqX7HJtfI/JZb2eKhACWd6LXdK+iZrlBa6vtR6/IYGzc023erz3nZX1f5pJlCwHD2uusCH5ZnBfc3hL9ELQlsNbMLWSJFn6c/XOx599f+BceZ8E/0L9o9V7eSNJ4ntOazmjXJa4My4c1nLGRRwn7daWfigsPn1o7tNNnElJQP8CniFPynu81iYAAAAASUVORK5CYII=">
 <title>Jeen — מחשבון רווח תפעולי</title>
 <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -264,6 +265,7 @@ input[readonly] { background: var(--surface2); color: var(--text2); cursor: defa
 
 <main class="main">
 
+<!-- CARD P: Project Info -->
 <div class="card">
   <div class="card-header">
     <div class="card-num lavender">P</div>
@@ -278,9 +280,66 @@ input[readonly] { background: var(--surface2); color: var(--text2); cursor: defa
   </div>
 </div>
 
+<!-- CARD 1: Budget (now first) -->
 <div class="card">
   <div class="card-header">
-    <div class="card-num">1</div>
+    <div class="card-num" style="background:var(--lavender);color:var(--lavender-dark)">1</div>
+    <div class="card-title">תקציב ורווחיות יעד</div>
+    <div class="card-desc">תקציב הפרויקט מחושב אוטומטית לפי עלות כ״א, בצ״מ ורווח יעד</div>
+  </div>
+  <div class="card-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:12px;margin-bottom:16px">
+      <div class="field">
+        <label>בצ״מ — הוצאות בלתי צפויות (%)</label>
+        <input type="number" id="bcmPct" class="currency" value="10" min="0" max="100" step="1" oninput="calc()" placeholder="0">
+      </div>
+      <div class="field">
+        <label>רווח יעד (%)</label>
+        <input type="number" id="targetProfitPct" class="currency" value="20" min="0" max="99" step="1" oninput="calc()" placeholder="0">
+      </div>
+      <div class="field">
+        <label>עלות כ״א מחושבת (₪)</label>
+        <input type="text" id="computed-cost" class="currency" readonly>
+      </div>
+      <div class="field">
+        <label>תקציב מחושב (₪)</label>
+        <input type="text" id="budget-display" class="currency" readonly style="font-weight:600;color:var(--lavender-dark)">
+      </div>
+      <div class="field">
+        <label>רווח תפעולי מחושב (₪)</label>
+        <input type="text" id="computed-profit" class="currency" readonly>
+      </div>
+    </div>
+    <div style="border-top:1px solid var(--border);padding-top:14px">
+      <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:10px">
+        📊 ניתוח רגישות — השפעה על עלות כ״א
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px">
+        <div class="field">
+          <label>עליית שכר ממוצעת (%)</label>
+          <input type="number" id="salaryIncreasePct" class="currency" value="0" min="0" max="100" step="0.5" oninput="calc()" placeholder="0">
+        </div>
+        <div class="field">
+          <label>חריגת שעות בפועל (%)</label>
+          <input type="number" id="overdueHoursPct" class="currency" value="0" min="0" max="200" step="1" oninput="calc()" placeholder="0">
+        </div>
+        <div class="field">
+          <label>עלות כ״א לאחר רגישות (₪)</label>
+          <input type="text" id="sensitivity-cost" class="currency" readonly>
+        </div>
+        <div class="field">
+          <label>רווח לאחר רגישות (₪)</label>
+          <input type="text" id="sensitivity-profit" class="currency" readonly>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CARD 2: Manpower -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-num">2</div>
     <div class="card-title">כוח אדם — עלות מעסיק חודשית</div>
     <div class="card-desc">כולל שכר + ביטוח לאומי + פנסיה + פיצויים + קרן השתלמות (~35% מעל שכר ברוטו)</div>
   </div>
@@ -304,9 +363,10 @@ input[readonly] { background: var(--surface2); color: var(--text2); cursor: defa
   </div>
 </div>
 
+<!-- CARD 3: Milestones -->
 <div class="card">
   <div class="card-header">
-    <div class="card-num amber">2</div>
+    <div class="card-num amber">3</div>
     <div class="card-title">אבני דרך</div>
     <div class="card-desc">הגדר שלבים, משך ואחוז מעורבות לכל חבר צוות</div>
   </div>
@@ -316,21 +376,6 @@ input[readonly] { background: var(--surface2); color: var(--text2); cursor: defa
       <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       הוסף אבן דרך
     </button>
-  </div>
-</div>
-
-<div class="card">
-  <div class="card-header">
-    <div class="card-num" style="background:var(--lavender);color:var(--lavender-dark)">3</div>
-    <div class="card-title">תקציב הפרויקט</div>
-    <div class="card-desc">הסכום הכולל שנקבע מול הלקוח</div>
-  </div>
-  <div class="card-body">
-    <div class="grid3">
-      <div class="field"><label>תקציב כולל (₪)</label><input type="number" id="budget" class="currency" value="" min="0" oninput="calc()" placeholder="0"></div>
-      <div class="field"><label>עלות כ״א מחושבת (₪)</label><input type="text" id="computed-cost" class="currency" readonly></div>
-      <div class="field"><label>רווח תפעולי מחושב (₪)</label><input type="text" id="computed-profit" class="currency" readonly></div>
-    </div>
   </div>
 </div>
 
@@ -527,7 +572,11 @@ function setMsPct(msIdx, memberId, val) {
 }
 
 function calc() {
-  const budget = parseFloat(document.getElementById('budget').value)||0;
+  const bcmPct          = parseFloat(document.getElementById('bcmPct').value) || 0;
+  const targetProfitPct = parseFloat(document.getElementById('targetProfitPct').value) || 0;
+  const salaryIncrease  = parseFloat(document.getElementById('salaryIncreasePct').value) || 0;
+  const overdueHours    = parseFloat(document.getElementById('overdueHoursPct').value) || 0;
+
   let totalCost = 0;
   const breakdown = [];
   milestones.forEach(ms => {
@@ -542,18 +591,50 @@ function calc() {
       if (el) el.textContent = fmt(contrib);
     });
     totalCost += msCost;
-    const costEl = document.getElementById(`ms_cost_${ms.id}`);
-    const pctEl  = document.getElementById(`ms_pct_${ms.id}`);
-    if (costEl) costEl.value = fmt(msCost);
-    if (pctEl)  pctEl.value  = budget > 0 ? (msCost/budget*100).toFixed(1)+'%' : '-';
     breakdown.push({ ms, msCost, contribs });
   });
+
+  // Budget = manpower_cost × (1 + bcm%) ÷ (1 - targetProfit%)
+  const costWithBcm = totalCost * (1 + bcmPct / 100);
+  const budget = targetProfitPct < 100 ? costWithBcm / (1 - targetProfitPct / 100) : 0;
   const profit = budget - totalCost;
-  const margin = budget > 0 ? (profit/budget*100) : 0;
+  const margin = budget > 0 ? (profit / budget * 100) : 0;
+
+  // Sensitivity: apply salary increase + overdue hours
+  const sensitivityCost = totalCost * (1 + salaryIncrease / 100) * (1 + overdueHours / 100);
+  const sensitivityProfit = budget - sensitivityCost;
+
+  // Update milestone inline % fields using calculated budget
+  milestones.forEach(ms => {
+    const pctEl = document.getElementById(`ms_pct_${ms.id}`);
+    const costEl = document.getElementById(`ms_cost_${ms.id}`);
+    if (costEl) {
+      let msCost = 0;
+      team.forEach(m => {
+        const pct = ms.pcts[m.id] != null ? ms.pcts[m.id] : 0;
+        msCost += m.cost * (pct/100) * ms.months;
+      });
+      costEl.value = fmt(msCost);
+    }
+    if (pctEl) pctEl.value = budget > 0 ? (parseFloat(costEl?.value?.replace(/[^\d.-]/g,''))/budget*100 || 0).toFixed(1)+'%' : '-';
+  });
+
+  // Budget card fields
   document.getElementById('computed-cost').value = fmt(totalCost);
+  document.getElementById('budget-display').value = fmt(budget);
   const cpEl = document.getElementById('computed-profit');
   cpEl.value = fmt(profit);
   cpEl.style.color = profit >= 0 ? '#2A7A52' : 'var(--coral)';
+
+  // Sensitivity fields
+  const scEl = document.getElementById('sensitivity-cost');
+  const spEl = document.getElementById('sensitivity-profit');
+  scEl.value = fmt(sensitivityCost);
+  scEl.style.color = (salaryIncrease > 0 || overdueHours > 0) ? 'var(--amber-dark)' : 'var(--text2)';
+  spEl.value = fmt(sensitivityProfit);
+  spEl.style.color = sensitivityProfit >= 0 ? '#2A7A52' : 'var(--coral)';
+
+  // Output metrics
   document.getElementById('out-budget').textContent = fmt(budget);
   document.getElementById('out-cost').textContent = fmt(totalCost);
   const pEl = document.getElementById('out-profit');
@@ -567,7 +648,7 @@ function calc() {
   bar.style.width = barPct+'%';
   bar.style.background = profit >= 0 ? '#2A7A52' : '#D95548';
   document.getElementById('bar-label').textContent =
-    `מרווח: ${margin.toFixed(1)}% | עלות כ״א: ${fmt(totalCost)} | תקציב: ${fmt(budget)}`;
+    `מרווח: ${margin.toFixed(1)}% | עלות כ״א: ${fmt(totalCost)} | תקציב מחושב: ${fmt(budget)}`;
   const proj = document.getElementById('projectName').value;
   const client = document.getElementById('clientName').value;
   document.getElementById('output-subtitle').textContent = [proj,client].filter(Boolean).join(' | ')||'ממתין לנתונים...';
@@ -598,13 +679,19 @@ function calc() {
   tbody.innerHTML = html;
 }
 function getState() {
-  return { version:2, projectName:document.getElementById('projectName').value, clientName:document.getElementById('clientName').value, budget:document.getElementById('budget').value, team:team.map(m=>({name:m.name,roleId:m.roleId,cost:m.cost})), milestones:milestones.map(ms=>({name:ms.name,months:ms.months,pcts:{...ms.pcts}})), savedAt:new Date().toISOString() };
+  return { version:3, projectName:document.getElementById('projectName').value, clientName:document.getElementById('clientName').value,
+    bcmPct:document.getElementById('bcmPct').value, targetProfitPct:document.getElementById('targetProfitPct').value,
+    salaryIncreasePct:document.getElementById('salaryIncreasePct').value, overdueHoursPct:document.getElementById('overdueHoursPct').value,
+    team:team.map(m=>({name:m.name,roleId:m.roleId,cost:m.cost})), milestones:milestones.map(ms=>({name:ms.name,months:ms.months,pcts:{...ms.pcts}})), savedAt:new Date().toISOString() };
 }
 
 function applyState(state) {
   document.getElementById('projectName').value = state.projectName||'';
   document.getElementById('clientName').value  = state.clientName||'';
-  document.getElementById('budget').value = state.budget||0;
+  document.getElementById('bcmPct').value = state.bcmPct != null ? state.bcmPct : 10;
+  document.getElementById('targetProfitPct').value = state.targetProfitPct != null ? state.targetProfitPct : 20;
+  document.getElementById('salaryIncreasePct').value = state.salaryIncreasePct || 0;
+  document.getElementById('overdueHoursPct').value = state.overdueHoursPct || 0;
   team=[]; memberCounter=0;
   (state.team||[]).forEach(m=>{ team.push({id:memberCounter++,name:m.name||'',roleId:m.roleId||'fs',cost:m.cost||0}); });
   milestones=[]; msCounter=0;
@@ -644,7 +731,7 @@ function loadFromLocal(id){const saves=getLocalSaves();if(saves[id]){applyState(
 function deleteLocal(id,e){e.stopPropagation();const saves=getLocalSaves();delete saves[id];localStorage.setItem('profitCalcSaves',JSON.stringify(saves));openLoad();}
 function loadFromFile(event){const file=event.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{try{applyState(JSON.parse(e.target.result));showToast('הקובץ נטען בהצלחה');closeModal();}catch{showToast('שגיאה בטעינת הקובץ');}};reader.readAsText(file);event.target.value='';}
 function closeModal(){document.getElementById('load-modal').classList.remove('active');}
-function newProject(){if(team.length>0&&!confirm('ליצור פרויקט חדש? הנתונים הנוכחיים יאופסו.'))return;team=[];milestones=[];memberCounter=0;msCounter=0;document.getElementById('projectName').value='';document.getElementById('clientName').value='';document.getElementById('budget').value='';renderTeam();renderAllMilestones();calc();}
+function newProject(){if(team.length>0&&!confirm('ליצור פרויקט חדש? הנתונים הנוכחיים יאופסו.'))return;team=[];milestones=[];memberCounter=0;msCounter=0;document.getElementById('projectName').value='';document.getElementById('clientName').value='';document.getElementById('bcmPct').value=10;document.getElementById('targetProfitPct').value=20;document.getElementById('salaryIncreasePct').value=0;document.getElementById('overdueHoursPct').value=0;renderTeam();renderAllMilestones();calc();}
 function fmt(n){return '₪'+Math.round(n).toLocaleString('he-IL');}
 function escHtml(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
@@ -653,18 +740,21 @@ document.getElementById('load-modal').addEventListener('click',function(e){if(e.
 
 // ─── EXPORT TO EXCEL ───
 function exportExcel() {
-  const budget = parseFloat(document.getElementById('budget').value)||0;
+  const bcmPct = parseFloat(document.getElementById('bcmPct').value)||0;
+  const targetProfitPct = parseFloat(document.getElementById('targetProfitPct').value)||0;
+  const salaryIncrease = parseFloat(document.getElementById('salaryIncreasePct').value)||0;
+  const overdueHours = parseFloat(document.getElementById('overdueHoursPct').value)||0;
   const proj = document.getElementById('projectName').value || 'פרויקט';
   const client = document.getElementById('clientName').value || '';
   const wb = XLSX.utils.book_new();
-
-  // Sheet 1: Summary
   let totalCost = 0;
-  milestones.forEach(ms => {
-    team.forEach(m => { totalCost += m.cost * ((ms.pcts[m.id]||0)/100) * ms.months; });
-  });
+  milestones.forEach(ms => { team.forEach(m => { totalCost += m.cost * ((ms.pcts[m.id]||0)/100) * ms.months; }); });
+  const costWithBcm = totalCost * (1 + bcmPct/100);
+  const budget = targetProfitPct < 100 ? costWithBcm / (1 - targetProfitPct/100) : 0;
   const profit = budget - totalCost;
   const margin = budget > 0 ? (profit/budget*100) : 0;
+  const sensitivityCost = totalCost * (1 + salaryIncrease/100) * (1 + overdueHours/100);
+  const sensitivityProfit = budget - sensitivityCost;
   const summaryData = [
     ['מחשבון רווח תפעולי — Jeen'],
     [],
@@ -672,10 +762,19 @@ function exportExcel() {
     ['לקוח', client],
     ['תאריך', new Date().toLocaleDateString('he-IL')],
     [],
-    ['תקציב כולל (₪)', budget],
+    ['בצ״מ (%)', bcmPct],
+    ['רווח יעד (%)', targetProfitPct],
+    ['תקציב מחושב (₪)', Math.round(budget)],
     ['עלות כ״א כוללת (₪)', Math.round(totalCost)],
     ['רווח תפעולי (₪)', Math.round(profit)],
     ['מרווח רווח (%)', parseFloat(margin.toFixed(1))],
+    [],
+    ['ניתוח רגישות'],
+    ['עליית שכר (%)', salaryIncrease],
+    ['חריגת שעות (%)', overdueHours],
+    ['עלות לאחר רגישות (₪)', Math.round(sensitivityCost)],
+    ['רווח לאחר רגישות (₪)', Math.round(sensitivityProfit)],
+
   ];
   const ws1 = XLSX.utils.aoa_to_sheet(summaryData);
   ws1['!cols'] = [{wch:28},{wch:20}];
