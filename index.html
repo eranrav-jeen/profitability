@@ -410,7 +410,76 @@ input[readonly] { background: var(--surface2); color: var(--text2); cursor: defa
   </div>
 </div>
 
-</main>
+<!-- CARD 5: Plan vs. Actual -->
+<div class="card" id="pva-card">
+  <div class="card-header">
+    <div class="card-num" style="background:#7B3FA0;color:white">5</div>
+    <div class="card-title">Plan vs. Actual — תכנון מול ביצוע</div>
+    <div class="card-desc" id="pva-desc">טען קובץ Admiral כדי להשוות תכנון מול ביצוע בפועל</div>
+  </div>
+  <div class="card-body">
+    <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end;margin-bottom:16px">
+      <div class="field">
+        <label>קובץ Admiral (XLS) — ייצוא שעות על פי פרויקט</label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="file" id="pva-file-input" accept=".xls,.xlsx" style="display:none" onchange="loadAdmiralFile(event)">
+          <button class="btn btn-outline" onclick="document.getElementById('pva-file-input').click()" style="width:100%">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M2 11v2a1 1 0 001 1h10a1 1 0 001-1v-2M8 2v8M5 7l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span id="pva-file-label">בחר קובץ...</span>
+          </button>
+        </div>
+      </div>
+      <div class="field">
+        <label>השווה לאבני דרך (ניתן לבחור מספר)</label>
+        <div style="position:relative" id="pva-ms-wrapper">
+          <button type="button" class="btn btn-outline" id="pva-ms-btn" onclick="toggleMsDropdown()"
+            style="width:100%;justify-content:space-between;text-align:right;font-weight:400;color:var(--text)">
+            <span id="pva-ms-label">— בחר שלבים —</span>
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </button>
+          <div id="pva-ms-dropdown" style="display:none;position:absolute;top:100%;right:0;left:0;background:var(--surface);border:1px solid var(--border-strong);border-radius:var(--radius-sm);box-shadow:var(--shadow-md);z-index:50;max-height:260px;overflow-y:auto;margin-top:2px" dir="rtl">
+            <div style="padding:6px 10px;border-bottom:1px solid var(--border);display:flex;gap:8px">
+              <button type="button" onclick="selectAllMs(true)" class="btn btn-outline" style="padding:3px 8px;font-size:11px">בחר הכל</button>
+              <button type="button" onclick="selectAllMs(false)" class="btn btn-outline" style="padding:3px 8px;font-size:11px">נקה הכל</button>
+            </div>
+            <div id="pva-ms-checkboxes" style="padding:4px 0"></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <button class="btn" style="background:#7B3FA0;color:white;border:1px solid #5e2f7a" onclick="exportPvaPDF()">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M5 8h6M5 11h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          ייצא PDF
+        </button>
+      </div>
+    </div>
+
+    <div id="pva-output" style="display:none">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px" id="pva-metrics"></div>
+      <div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px">השוואה לפי עובד</div>
+      <table class="breakdown-table" id="pva-table">
+        <thead>
+          <tr>
+            <th>עובד</th>
+            <th style="text-align:center">שעות מתוכננות</th>
+            <th style="text-align:center">שעות בפועל</th>
+            <th style="text-align:center">סטייה (שעות)</th>
+            <th style="text-align:center">סטייה (%)</th>
+            <th style="text-align:left;direction:ltr">עלות מתוכננת (₪)</th>
+            <th style="text-align:left;direction:ltr">עלות בפועל (₪)</th>
+            <th style="text-align:left;direction:ltr">סטיית עלות (₪)</th>
+          </tr>
+        </thead>
+        <tbody id="pva-tbody"></tbody>
+      </table>
+    </div>
+    <div id="pva-empty" style="text-align:center;color:var(--text3);font-size:13px;padding:24px 0">
+      טען קובץ Admiral ובחר אבן דרך להשוואה
+    </div>
+  </div>
+</div>
+
+
 
 <div id="print-overlay"></div>
 
@@ -1073,6 +1142,260 @@ function exportPDF(mode) {
 
 
 function fmtNum(n) { return '₪'+Math.round(n).toLocaleString('en-US'); }
+
+
+// ─── PLAN VS ACTUAL ───
+const MONTHLY_HOURS = 168;
+let pvaActualData = null;   // { period, workers: {name: hours} }
+
+function toggleMsDropdown() {
+  const dd = document.getElementById('pva-ms-dropdown');
+  dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+}
+// Close dropdown when clicking outside
+document.addEventListener('click', e => {
+  const wrapper = document.getElementById('pva-ms-wrapper');
+  if (wrapper && !wrapper.contains(e.target)) {
+    document.getElementById('pva-ms-dropdown').style.display = 'none';
+  }
+});
+
+function selectAllMs(val) {
+  document.querySelectorAll('.pva-ms-cb').forEach(cb => { cb.checked = val; });
+  updateMsLabel(); renderPva();
+}
+
+function updateMsLabel() {
+  const checked = [...document.querySelectorAll('.pva-ms-cb:checked')];
+  const label = document.getElementById('pva-ms-label');
+  if (checked.length === 0) label.textContent = '— בחר שלבים —';
+  else if (checked.length === 1) label.textContent = milestones[parseInt(checked[0].value)]?.name || '1 שלב';
+  else label.textContent = `${checked.length} שלבים נבחרו`;
+}
+
+function getSelectedMsIndices() {
+  return [...document.querySelectorAll('.pva-ms-cb:checked')].map(cb => parseInt(cb.value));
+}
+
+function updatePvaMilestoneSelect() {
+  const container = document.getElementById('pva-ms-checkboxes');
+  if (!container) return;
+  const prevSelected = new Set(getSelectedMsIndices());
+  container.innerHTML = milestones.map((ms, i) => `
+    <label style="display:flex;align-items:center;gap:8px;padding:7px 12px;cursor:pointer;font-size:13px;border-bottom:1px solid #F4F2EE" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
+      <input type="checkbox" class="pva-ms-cb" value="${i}" ${prevSelected.has(i)?'checked':''}
+        onchange="updateMsLabel();renderPva()" style="width:14px;height:14px;accent-color:var(--lavender-dark);flex-shrink:0">
+      <span>${escHtml(ms.name)}</span>
+      <span style="font-size:11px;color:var(--text3);margin-right:auto">${ms.months} חודשים</span>
+    </label>`).join('');
+  updateMsLabel();
+}
+
+function loadAdmiralFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  document.getElementById('pva-file-label').textContent = file.name;
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const wb = XLSX.read(e.target.result, { type: 'binary', cellDates: true });
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: null });
+
+      // Row 1 (index 1): contains the period string
+      const periodRow = (rows[1] || []).find(c => c && typeof c === 'string' && c.includes(' - '));
+      const period = periodRow || 'לא ידוע';
+
+      // Row 2 (index 2): headers — col 7 = עובד, col 4 = שעות
+      // Data rows start at index 3; skip summary rows (no date in col 8)
+      const workerHours = {};
+      for (let i = 3; i < rows.length; i++) {
+        const row = rows[i];
+        const worker = row[7];
+        const hours  = parseFloat(row[4]);
+        const date   = row[8];
+        if (!worker || !date || isNaN(hours) || worker === 'סה"כ') continue;
+        if (typeof worker !== 'string') continue;
+        const w = worker.trim();
+        workerHours[w] = (workerHours[w] || 0) + hours;
+      }
+
+      pvaActualData = { period, workers: workerHours };
+      document.getElementById('pva-desc').textContent = `Admiral: ${period} | ${Object.keys(workerHours).length} עובדים | ${Object.values(workerHours).reduce((a,b)=>a+b,0).toFixed(1)} שעות בפועל`;
+      renderPva();
+    } catch(err) {
+      showToast('שגיאה בקריאת קובץ Admiral: ' + err.message);
+    }
+  };
+  reader.readAsBinaryString(file);
+  event.target.value = '';
+}
+
+function renderPva() {
+  const msIndices = getSelectedMsIndices();
+  if (!pvaActualData || msIndices.length === 0) {
+    document.getElementById('pva-output').style.display = 'none';
+    document.getElementById('pva-empty').style.display = 'block';
+    document.getElementById('pva-empty').textContent = pvaActualData ? 'בחר לפחות אבן דרך אחת' : 'טען קובץ Admiral ובחר אבני דרך להשוואה';
+    return;
+  }
+  document.getElementById('pva-output').style.display = 'block';
+  document.getElementById('pva-empty').style.display = 'none';
+
+  const actual = pvaActualData.workers;
+  const selectedMilestones = msIndices.map(i => milestones[i]);
+
+  // Aggregate planned hours per team member across all selected milestones
+  const plannedByMember = {};   // memberId → { hours, cost, member }
+  selectedMilestones.forEach(ms => {
+    team.forEach(m => {
+      const pct = ms.pcts[m.id] || 0;
+      if (!plannedByMember[m.id]) plannedByMember[m.id] = { hours: 0, cost: 0, member: m };
+      plannedByMember[m.id].hours += (pct / 100) * MONTHLY_HOURS * ms.months;
+      plannedByMember[m.id].cost  += m.cost * (pct / 100) * ms.months;
+    });
+  });
+
+  let totalPlannedH = 0, totalActualH = 0, totalPlannedC = 0, totalActualC = 0;
+  const rows = [];
+
+  // Match each team member to actual
+  team.forEach(m => {
+    const role = getRole(m.roleId);
+    const displayName = m.name || role.label;
+    const planned = plannedByMember[m.id] || { hours: 0, cost: 0 };
+    if (planned.hours === 0 && !actual[displayName]) return;
+
+    let actualH = actual[displayName] || 0;
+    if (!actualH) {
+      const lastName = displayName.split(' ').pop();
+      const match = Object.keys(actual).find(k => k.includes(lastName) || lastName.includes(k.split(' ').pop()));
+      if (match) actualH = actual[match];
+    }
+
+    const diffH = actualH - planned.hours;
+    const diffPct = planned.hours > 0 ? (diffH / planned.hours * 100) : null;
+    const totalMonths = selectedMilestones.reduce((s, ms) => s + ms.months, 0);
+    const actualC = totalMonths > 0 ? m.cost * (actualH / MONTHLY_HOURS) : 0;
+    const diffC = actualC - planned.cost;
+
+    totalPlannedH += planned.hours; totalActualH += actualH;
+    totalPlannedC += planned.cost;  totalActualC += actualC;
+    rows.push({ name: displayName, role: role.label, plannedH: planned.hours, actualH, diffH, diffPct, plannedC: planned.cost, actualC, diffC });
+  });
+
+  // Workers in actual but NOT in plan
+  Object.entries(actual).forEach(([name, actualH]) => {
+    const inPlan = rows.find(r => name.includes(r.name.split(' ').pop()) || r.name.includes(name.split(' ').pop()));
+    if (!inPlan) {
+      totalActualH += actualH;
+      rows.push({ name, role: '—', plannedH: 0, actualH, diffH: actualH, diffPct: null, plannedC: 0, actualC: 0, diffC: 0 });
+    }
+  });
+
+  const totalDiffH = totalActualH - totalPlannedH;
+  const totalDiffC = totalActualC - totalPlannedC;
+  const utilizationPct = totalPlannedH > 0 ? (totalActualH / totalPlannedH * 100).toFixed(1) : '—';
+
+  const msLabel = selectedMilestones.length === 1
+    ? selectedMilestones[0].name
+    : `${selectedMilestones.length} שלבים (${selectedMilestones.map(m=>m.name).join(', ')})`;
+
+  document.getElementById('pva-metrics').innerHTML = `
+    <div class="metric"><div class="metric-label">שעות מתוכננות</div><div class="metric-val blue">${totalPlannedH.toFixed(1)}</div></div>
+    <div class="metric"><div class="metric-label">שעות בפועל</div><div class="metric-val">${totalActualH.toFixed(1)}</div></div>
+    <div class="metric"><div class="metric-label">סטיית שעות</div><div class="metric-val ${totalDiffH >= 0 ? 'red' : 'green'}">${totalDiffH >= 0 ? '+' : ''}${totalDiffH.toFixed(1)}</div></div>
+    <div class="metric"><div class="metric-label">% ניצול תכנון</div><div class="metric-val ${parseFloat(utilizationPct) <= 100 ? 'green' : 'red'}">${utilizationPct}%</div></div>`;
+
+  const tbody = document.getElementById('pva-tbody');
+  let html = rows.map(r => {
+    const diffColor = r.diffH > 0 ? 'color:var(--coral)' : r.diffH < 0 ? 'color:#2A7A52' : '';
+    const diffCColor = r.diffC > 0 ? 'color:var(--coral)' : r.diffC < 0 ? 'color:#2A7A52' : '';
+    return `<tr>
+      <td><strong>${escHtml(r.name)}</strong><br><span style="font-size:10px;color:var(--text3)">${r.role}</span></td>
+      <td style="text-align:center">${r.plannedH.toFixed(1)}</td>
+      <td style="text-align:center">${r.actualH.toFixed(1)}</td>
+      <td style="text-align:center;${diffColor};font-weight:600">${r.diffH >= 0 ? '+' : ''}${r.diffH.toFixed(1)}</td>
+      <td style="text-align:center;${diffColor}">${r.diffPct !== null ? (r.diffPct >= 0 ? '+' : '') + r.diffPct.toFixed(1) + '%' : '—'}</td>
+      <td style="text-align:left;direction:ltr">${fmt(r.plannedC)}</td>
+      <td style="text-align:left;direction:ltr">${fmt(r.actualC)}</td>
+      <td style="text-align:left;direction:ltr;${diffCColor};font-weight:600">${r.diffC >= 0 ? '+' : ''}${fmt(r.diffC)}</td>
+    </tr>`;
+  }).join('');
+  html += `<tr style="background:var(--surface2);font-weight:700;border-top:2px solid var(--border-strong)">
+    <td>סה"כ — ${escHtml(msLabel)}</td>
+    <td style="text-align:center">${totalPlannedH.toFixed(1)}</td>
+    <td style="text-align:center">${totalActualH.toFixed(1)}</td>
+    <td style="text-align:center;color:${totalDiffH>0?'var(--coral)':'#2A7A52'}">${totalDiffH>=0?'+':''}${totalDiffH.toFixed(1)}</td>
+    <td style="text-align:center">—</td>
+    <td style="text-align:left;direction:ltr">${fmt(totalPlannedC)}</td>
+    <td style="text-align:left;direction:ltr">${fmt(totalActualC)}</td>
+    <td style="text-align:left;direction:ltr;color:${totalDiffC>0?'var(--coral)':'#2A7A52'};font-weight:700">${totalDiffC>=0?'+':''}${fmt(totalDiffC)}</td>
+  </tr>`;
+  tbody.innerHTML = html;
+}
+function getRole(roleId) { return ROLE_TYPES.find(r => r.id === roleId) || ROLE_TYPES[0]; }
+
+function exportPvaPDF() {
+  if (!pvaActualData) { showToast('טען קובץ Admiral תחילה'); return; }
+  const msIndices = getSelectedMsIndices();
+  if (msIndices.length === 0) { showToast('בחר לפחות אבן דרך אחת'); return; }
+  const msLabel = msIndices.length === 1
+    ? milestones[msIndices[0]]?.name
+    : `${msIndices.length} שלבים: ` + msIndices.map(i => milestones[i]?.name).join(', ');
+  const proj = document.getElementById('projectName').value || 'פרויקט';
+  const client = document.getElementById('clientName').value || '';
+
+  const tableHtml = document.getElementById('pva-table').outerHTML;
+  const metricsHtml = document.getElementById('pva-metrics').innerHTML;
+
+  const fullPage = `<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="UTF-8">
+<title>Plan vs Actual — ${proj}</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}body{font-family:'Heebo',Arial,sans-serif;direction:rtl;color:#2C2A28;background:#f5f4f0;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+  .print-btn-bar{background:#2C2A28;padding:10px 20px;display:flex;justify-content:space-between;align-items:center}
+  .print-btn-bar span{color:rgba(255,255,255,0.6);font-size:13px}
+  .print-btn{background:#7B3FA0;color:white;border:none;padding:8px 18px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Heebo',sans-serif}
+  .page{background:white;width:210mm;margin:20px auto;padding:12mm 10mm;box-shadow:0 4px 20px rgba(0,0,0,0.1)}
+  .hdr{background:#2C2A28;color:white;padding:10px 14px;border-radius:4px 4px 0 0;display:flex;justify-content:space-between}
+  .hdr-title{font-size:16px;font-weight:700}.hdr-sub{font-size:10px;color:rgba(255,255,255,0.6);margin-top:2px}
+  .stripe{height:4px;background:#7B3FA0;margin-bottom:14px}
+  .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+  .metric{border:1px solid #E8E4DF;border-radius:6px;padding:10px;text-align:center}
+  .metric-label{font-size:9px;color:#9C9890;font-weight:500;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+  .metric-val{font-size:16px;font-weight:700}
+  .sec-title{font-size:10px;font-weight:600;color:#5C5650;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;border-bottom:1px solid #E8E4DF;padding-bottom:4px}
+  table{width:100%;border-collapse:collapse;font-size:10px}
+  th{background:#2C2A28;color:white;padding:5px 6px;text-align:right;font-size:9px;font-weight:600;text-transform:uppercase}
+  td{padding:4px 6px;border-bottom:1px solid #F0EDE8}
+  .footer{margin-top:14px;border-top:1px solid #E8E4DF;padding-top:6px;display:flex;justify-content:space-between;font-size:9px;color:#9C9890}
+  @media print{.print-btn-bar{display:none}body{background:white}.page{margin:0;box-shadow:none;width:100%}@page{margin:0;size:A4}}
+</style></head><body>
+<div class="print-btn-bar"><span>Plan vs. Actual — ${escHtml(proj)}${client?' | '+escHtml(client):''} | ${escHtml(msLabel)}</span><button class="print-btn" onclick="window.print()">🖨 שמור כ-PDF</button></div>
+<div class="page">
+  <div class="hdr"><div><div class="hdr-title">Plan vs. Actual — ${escHtml(proj)}</div><div class="hdr-sub">${escHtml(client)} | שלבים: ${escHtml(msLabel)} | Admiral: ${pvaActualData.period}</div></div><div style="font-size:10px;color:rgba(255,255,255,.5)">${new Date().toLocaleDateString('he-IL')}</div></div>
+  <div class="stripe"></div>
+  <div class="metrics">${metricsHtml.replace(/class="metric-val blue"/g,'class="metric-val" style="color:#1A4A7A"').replace(/class="metric-val green"/g,'class="metric-val" style="color:#2A7A52"').replace(/class="metric-val red"/g,'class="metric-val" style="color:#D95548"')}</div>
+  <div class="sec-title">פירוט לפי עובד</div>
+  ${tableHtml}
+  <div class="footer"><span>Jeen Profit Calculator</span><span>${new Date().toLocaleDateString('he-IL')}</span></div>
+</div>
+<script>window.focus();<\/script>
+</body></html>`;
+
+  const blob = new Blob([fullPage], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const tab = window.open(url, '_blank');
+  if (!tab) showToast('אפשר פתיחת חלונות קופצים');
+  else showToast('דוח PvA נפתח בטאב חדש');
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+
+// Hook into renderAllMilestones to keep the PvA milestone selector in sync
+const _origRenderAll = renderAllMilestones;
+renderAllMilestones = function() { _origRenderAll(); updatePvaMilestoneSelect(); };
 
 function init() {
   renderTeam(); renderAllMilestones(); calc();
