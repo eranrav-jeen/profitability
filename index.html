@@ -881,6 +881,78 @@ function exportExcel() {
   ws3['!cols'] = [{wch:22},{wch:22},{wch:22},{wch:16},{wch:14},{wch:16},{wch:14}];
   XLSX.utils.book_append_sheet(wb, ws3, 'פירוט אבני דרך');
 
+  // Sheet 4: Milestone x Employee Effort Matrix
+  const MONTHLY_HOURS_XL = 168;
+  const memberLabels = team.map(m => {
+    const role = ROLE_TYPES.find(r => r.id === m.roleId) || ROLE_TYPES[0];
+    return m.name || role.label;
+  });
+
+  // 4a. % involvement matrix
+  const pctHeader = ['אבן דרך', 'משך (חודשים)', ...memberLabels, 'סה״כ חודשי אדם'];
+  const pctRows = [pctHeader];
+  milestones.forEach(ms => {
+    const row = [ms.name, ms.months];
+    let msManMonths = 0;
+    team.forEach(m => {
+      const pct = ms.pcts[m.id] || 0;
+      row.push(pct ? pct + '%' : '');
+      msManMonths += (pct/100) * ms.months;
+    });
+    row.push(parseFloat(msManMonths.toFixed(2)));
+    pctRows.push(row);
+  });
+  pctRows.push([]);
+
+  // 4b. Man-months matrix
+  pctRows.push(['חודשי אדם לפי שלב ועובד']);
+  const mmHeader = ['אבן דרך', 'משך (חודשים)', ...memberLabels, 'סה״כ'];
+  pctRows.push(mmHeader);
+  let grandTotalMM = 0;
+  const perEmployeeMM = memberLabels.map(()=>0);
+  milestones.forEach(ms => {
+    const row = [ms.name, ms.months];
+    let rowTotal = 0;
+    team.forEach((m, i) => {
+      const pct = ms.pcts[m.id] || 0;
+      const mm = (pct/100) * ms.months;
+      row.push(mm > 0 ? parseFloat(mm.toFixed(2)) : '');
+      rowTotal += mm;
+      perEmployeeMM[i] += mm;
+    });
+    row.push(parseFloat(rowTotal.toFixed(2)));
+    grandTotalMM += rowTotal;
+    pctRows.push(row);
+  });
+  pctRows.push(['סה״כ עובד', '', ...perEmployeeMM.map(v => v>0?parseFloat(v.toFixed(2)):''), parseFloat(grandTotalMM.toFixed(2))]);
+  pctRows.push([]);
+
+  // 4c. Hours matrix (man-months × 168)
+  pctRows.push(['שעות מתוכננות לפי שלב ועובד (168 שעות לחודש)']);
+  pctRows.push(mmHeader);
+  let grandTotalHours = 0;
+  const perEmployeeHours = memberLabels.map(()=>0);
+  milestones.forEach(ms => {
+    const row = [ms.name, ms.months];
+    let rowTotal = 0;
+    team.forEach((m, i) => {
+      const pct = ms.pcts[m.id] || 0;
+      const hrs = (pct/100) * ms.months * MONTHLY_HOURS_XL;
+      row.push(hrs > 0 ? Math.round(hrs) : '');
+      rowTotal += hrs;
+      perEmployeeHours[i] += hrs;
+    });
+    row.push(Math.round(rowTotal));
+    grandTotalHours += rowTotal;
+    pctRows.push(row);
+  });
+  pctRows.push(['סה״כ עובד', '', ...perEmployeeHours.map(v => v>0?Math.round(v):''), Math.round(grandTotalHours)]);
+
+  const ws4 = XLSX.utils.aoa_to_sheet(pctRows);
+  ws4['!cols'] = [{wch:22},{wch:14}, ...memberLabels.map(()=>({wch:16})), {wch:16}];
+  XLSX.utils.book_append_sheet(wb, ws4, 'מאמץ עובדים לפי שלב');
+
+
   XLSX.writeFile(wb, `profit-${proj.replace(/\s+/g,'-')}-${new Date().toISOString().slice(0,10)}.xlsx`);
   showToast('קובץ Excel נוצר בהצלחה');
 }
